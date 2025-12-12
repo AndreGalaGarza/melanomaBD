@@ -22,13 +22,50 @@ The Surveillance, Epidemiology, and End Results (SEER) program provides comprehe
 The goal of this study is to examine differences in melanoma incidence and survival between Black and White populations using SEER data from 1985–2022. By applying statistical methods including joinpoint trend analyses and survival models, we aim to clarify where disparities persist and provide evidence to support more equitable early detection and public health strategies.
 
 # Methods
-**TODO: What did we use to run our code?**
+For this project, a variety of regression methods were used on a series of SEER data. These methods include joinpoint regression, log-linear regression, and survival regression analysis, which were conducted in three separate investigations.
+
+## Log-Linear Regression
+The log-linear regression investigation serves as exploratory data analysis before we fit the regression models. Melanoma incidence data obtained from the SEER database was loaded from a CSV file into RStudio. The CSV file contains melanoma skin cancer incidence cases in the United States from the years 1975 to 2022. The analysis was of period trends of the following demographics: race (Black, White), sex (male, female), and anatomical location ("Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)"), which we refer to as a "subsite" in this report. An additional variable was created that adjusts the count to account for the age of participants: Count_adj = round(Rate * Population), where Rate is the incidence rate. Using this information, line plots were created using the ggplot2 library to visualize the average yearly age-adjusted melanoma incidence (per 100,000 cases) in the United states from 1975 to 2022. These plots showed the difference in melanoma incidence rates across different demographics, including sex, race, and subsite.
+
+## Joinpoint Regression
+For the joinpoint regression investigation, joinpoint-style segmented log-linear trends were fit to the data with a Poisson generalized linear model and offset by the log of Population. This provided log-linear models with annual percent changes (APC) as the slope of their segments. Using the function selgmented() from the R package "segmented", the best fit segments were identified on the log scale, with a set max of 5 joinpoints. Furthermore, the same model was automatically fit multiple times across many different strata, for each combination of race, sex, and subsite. Notably, due to the computational challenge of repeatedly fitting joinpoint regression models, the futureverse package "furrr" was used to parallelize the process of fitting models, which makes it significantly faster to do so.
+
+The annual percent change (APC) and average annual percent change (AAPC) were also computed from the segment slopes. These calculations and statistics were compiled into tables, along with line plots of the demographics fitted individually and in combinations.
+
+## Survival Regression
+For the survival regression investigation, the variables from the SEER data were recoded into factors such as age groups, race, sex, subsite, and year of diagnosis, as well as the stage of the cancer and event type as a competing risks outcome with 3 states: "Camcer death", "Other death", and "Alive". The survfit() package from the survival library was utilized to get state occupation probabilities over time, to find the probability that a person is alive at time 't' or the cumulative incidence that they have died by cancer or other means at that time. This workflow is repeated to plot the fraction of deaths from cancer over time, stratified by sex, race, age group, stage, and subsite. The follow-up is administratively censored at 5 years (t = 5)  by setting the event to "Alive" automatically if t > 5. Finally, Cox proportional hazards models were computed for each covariate in three different model types: univariable, bivariable (with stage), and multivariable (all covariates).
 
 # Results
-**TODO: What did our code output?**
+## Log-Linear Regression
+The overall incidence and trends of melanoma from 1975 to 2022 is that it has been steadily increasing. In 1975, the overall age-adjusted incidence rate was 2.6 per 100,000 people; in 2022, the overall age adjusted incidence rate was 7.9 per 100,000 people. The line plots below show the average melanoma incidence rate per 100,000 cases stratified by both race (all races, Black, White) and sex (male, female), then by both race and subsite (arm, head/neck, leg, trunk).
+
+**TODO: Two figures go here**
+
+When we stratify by sex, important heterogeneities we see are that men have a higher age-adjusted incidence rate compared to women. In 1975, men and women have a similar rate; however, in 2022, men are just under double that of women for incidence. When we stratify by race, White people have the highest age-adjusted rate, with "all races," which contains other races, slightly below them. These two races started at a comparable incidence rate, and steadily increase at a pretty comparable slope. However, when examining Black incidence rates, there has been very little change from the initial age-adjusted rate of 0.5 per 100,000 people to 2022, which was 0.3 per 100,000 people. When we stratify by subsite, the anatomical region with the highest incidence is the trunk. This was the case over the 48-year data collection. The three other regions — arm, head/neck, and leg — all stay within 4 age-adjusted incidence rates of each other.
+
+When analyzing the sex and race plots, the marginal trends are very comparable to joint trends. White women and men have the highest age-adjusted rate. Black males and females are both at an incidence rate that is around 0.5 per 100,000 people; there does not appear to be a significant difference among the sexes for Black individuals.
+
+## Joinpoint Regression
+
+**TODO: One or two figures go here**
+
+Overall, melanoma incidence increases over time; however, around 2010, there is a key change where the annual percent change (APC) drops from 2.9% to 0.3%, staying at around that value through 2022. For Sex, the incidence for men rises to about twice that for women around 2005-2022, despite having similar levels around 1975. For Race, White incidence is much higher than Black incidence, with a gap that continues to widen from around 10 to 40 per 100,000 by 2009-2022. All subsites are under ~10 per 100,000, with Trunk having some higher early APCs (e.g. 6.1%) and Leg having the lowest incidence and mildest APCs (< 3.7%).
+
+For combined stratifications, for Race * Sex, White men have the highest APC followed by White women. For Sex (Men) * Site, there are high early APCs across sites with Trunk being the highest, Head/Neck being unusually low, and Leg remaining the lowest. For Sex (Women) * Site, the trunk, arm, and leg trends appear to converge, while head/neck stays low. For Black * Site, black incidence is 3-6 times higher on the leg than other sites. Finally, there is consistently a lower or negative APC in the last two 5-year periods and visible dips around the year 2020.
+
+## Survival Regression
+The stacked plot below shows the fractions of the data cohort in each state occupation category over time (alive, death by cancer, or death by other means).
+
+**TODO: One figure goes here**
+
+From the extracted survfit quantities, at 5 years (t = 5), 80.1% of people are Alive, 7.7% have died from melanoma, and 12.6% have died from other causes. Among those who died of melanoma, the fraction who died in year 1 is 27.9%. Furthermore, 84% of people who survived the 1st year survived at least 5 years, and 71.4% of people who survived at least 5 years survived at least 15 years.
+
+In the cumulative incidence plots, most strata have a low incidence of below 0.1; however, for race, Black and Asian/Pacific Islander groups showed a higher incidence, with Black patients having 3 times the cumulative incidence of White ones. For sex, incidence for men was about twice as much as women. For subsite, head/neck incidence was nearly double arm incidence. For age, the <50 group was the highest (>0.1) compared to older groups (<0.05). 
+
+For the Cox models after adjustment, for the >=70 age group, the hazard ratio (HR) dropped from 3.27 (crude) to 1.53 (full), suggesting strong confounding by other factors. Similarly, for Black race, HR dropped from 2.07 to 1.18, and for the head/neck subsite, HR dropped from 1.62 to 1.00. The full table of HRs and p-values across the model types can be seen in our GitHub repository.
 
 # Conclusion
-**TODO: What are our takeaways?**
+**TODO: What are our takeaways? Specifically, read the results section and interpret the meaning of each of the results.**
 
 # References
 * Culp, M. B., & Lunsford, N. B. (2019). *Melanoma among non-Hispanic Black Americans.* Preventing Chronic Disease, 16, 180640. https://doi.org/10.5888/pcd16.180640
