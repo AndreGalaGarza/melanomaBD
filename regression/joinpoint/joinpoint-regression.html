@@ -114,42 +114,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="code" class="level1">
 <h1>Code</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   4.0.1     ✔ tibble    3.3.0
-✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-✔ purrr     1.1.0     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(segmented)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: MASS
-
-Attaching package: 'MASS'
-
-The following object is masked from 'package:dplyr':
-
-    select
-
-Loading required package: nlme
-
-Attaching package: 'nlme'
-
-The following object is masked from 'package:dplyr':
-
-    collapse</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load and clean data</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"Melanoma_5.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load and clean data</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"Melanoma_5.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 3675 Columns: 7
 ── Column specification ────────────────────────────────────────────────────────
@@ -160,34 +128,34 @@ dbl (2): Count, Population
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Race"</span>, <span class="st">"Sex"</span>, <span class="st">"Site"</span>, <span class="st">"Year"</span>, <span class="st">"Rate"</span>, <span class="st">"Count"</span>, <span class="st">"Population"</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>Rate <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data<span class="sc">$</span>Rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Race"</span>, <span class="st">"Sex"</span>, <span class="st">"Site"</span>, <span class="st">"Year"</span>, <span class="st">"Rate"</span>, <span class="st">"Count"</span>, <span class="st">"Population"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>Rate <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data<span class="sc">$</span>Rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: NAs introduced by coercion</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>Year <span class="ot">=</span> <span class="fu">as.numeric</span>(data<span class="sc">$</span>Year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>Year <span class="ot">=</span> <span class="fu">as.numeric</span>(data<span class="sc">$</span>Year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: NAs introduced by coercion</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create age-adjusted counts variable for the data</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>Count_adj <span class="ot">=</span> <span class="fu">round</span>(data<span class="sc">$</span>Rate<span class="sc">*</span>data<span class="sc">$</span>Population)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the year range </span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>data_melanoma <span class="ot">&lt;-</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(Year <span class="sc">!=</span> <span class="st">"1975-2022"</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Select a data subset (overall)</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>data_melanoma_overall <span class="ot">=</span> data_melanoma <span class="sc">|&gt;</span> </span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Race <span class="sc">==</span> <span class="fu">c</span>(<span class="st">"All races"</span>) <span class="sc">&amp;</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>           Sex <span class="sc">==</span> <span class="st">"Male and female"</span> <span class="sc">&amp;</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>           Site <span class="sc">==</span> <span class="st">"All sites"</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-linear model (Poisson)</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>out.glm <span class="ot">=</span> <span class="fu">glm</span>(Count_adj <span class="sc">~</span> Year, <span class="at">data=</span> data_melanoma_overall, </span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">family=</span><span class="fu">poisson</span>(), <span class="at">offset=</span><span class="fu">log</span>(Population))</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Select the best fit number of joinpoints</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>out.glm.best<span class="ot">=</span> <span class="fu">selgmented</span>(out.glm, <span class="at">seg.Z =</span> <span class="sc">~</span> Year, <span class="at">Kmax =</span> <span class="dv">5</span>, <span class="at">type=</span><span class="st">"bic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create age-adjusted counts variable for the data</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>Count_adj <span class="ot">=</span> <span class="fu">round</span>(data<span class="sc">$</span>Rate<span class="sc">*</span>data<span class="sc">$</span>Population)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the year range </span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>data_melanoma <span class="ot">&lt;-</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(Year <span class="sc">!=</span> <span class="st">"1975-2022"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Select a data subset (overall)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>data_melanoma_overall <span class="ot">=</span> data_melanoma <span class="sc">|&gt;</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Race <span class="sc">==</span> <span class="st">"All races"</span> <span class="sc">&amp;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>           Sex <span class="sc">==</span> <span class="st">"Male and female"</span> <span class="sc">&amp;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>           Site <span class="sc">==</span> <span class="st">"All sites"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-linear model (Poisson)</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>out.glm <span class="ot">=</span> <span class="fu">glm</span>(Count_adj <span class="sc">~</span> Year, <span class="at">data=</span> data_melanoma_overall, </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">family=</span><span class="fu">poisson</span>(), <span class="at">offset=</span><span class="fu">log</span>(Population))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Select the best fit number of joinpoints</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>out.glm.best<span class="ot">=</span> <span class="fu">selgmented</span>(out.glm, <span class="at">seg.Z =</span> <span class="sc">~</span> Year, <span class="at">Kmax =</span> <span class="dv">5</span>, <span class="at">type=</span><span class="st">"bic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>No. of breakpoints: 2 .. 3 .. 4 .. 5 .. </code></pre>
 </div>
@@ -202,13 +170,13 @@ BIC to detect no. of breakpoints:
 
 No. of selected breakpoints: 5  </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.segmented</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  out.glm.best,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">link =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(data_melanoma_overall<span class="sc">$</span>Rate)),</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Age-adjusted incidence of Melanoma Cases Overall from 1975-2022"</span>,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="st">"Rate per 100,000"</span>)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(data_melanoma_overall<span class="sc">$</span>Year, data_melanoma_overall<span class="sc">$</span>Rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.segmented</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  out.glm.best,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">link =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(data_melanoma_overall<span class="sc">$</span>Rate)),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Age-adjusted incidence of Melanoma Cases Overall from 1975-2022"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="st">"Rate per 100,000"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(data_melanoma_overall<span class="sc">$</span>Year, data_melanoma_overall<span class="sc">$</span>Rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -216,11 +184,11 @@ No. of selected breakpoints: 5  </code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Average annual percent change, 1985-2000</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># There is an aapc() function, but doesn't have the flexibility to specify the </span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># periods of interest. It only calculates it on the full range.</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># So, let's calculate by hand.</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(out.glm.best)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Average annual percent change, 1985-2000</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># There is an aapc() function, but doesn't have the flexibility to specify the </span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># periods of interest. It only calculates it on the full range.</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># So, let's calculate by hand.</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(out.glm.best)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     ***Regression Model with Segmented Relationship(s)***
@@ -256,8 +224,7 @@ AIC: 32028611
 
 Convergence attained in 23 iterations (rel. change -8.064e-06)</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The relevant break points at 1984, 1995, and 2005</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">slope</span>(out.glm.best, <span class="at">APC=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">slope</span>(out.glm.best, <span class="at">APC=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Year
           Est. CI(95%).l CI(95%).u
@@ -268,256 +235,179 @@ slope4 2.58460   2.58220   2.58690
 slope5 2.95300   2.95090   2.95510
 slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We see that the relevant beta coefficients are -0.0344310 (for 1985-1995: </span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 10 years) and -0.0202100 (for 1995 to 1999: 5 years)</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>AAPC_est <span class="ot">=</span> (<span class="fu">exp</span>((<span class="dv">5</span><span class="sc">*</span><span class="fl">0.003</span> <span class="sc">+</span> <span class="dv">5</span><span class="sc">*</span><span class="fl">0.003</span>)<span class="sc">/</span><span class="dv">10</span>) <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># AAPC on this 15 year period is -2.38% per year</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>AAPC_est <span class="ot">=</span> (<span class="fu">exp</span>((<span class="dv">5</span><span class="sc">*</span><span class="fl">0.003</span> <span class="sc">+</span> <span class="dv">5</span><span class="sc">*</span><span class="fl">0.003</span>)<span class="sc">/</span><span class="dv">10</span>) <span class="sc">-</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>joinpoint_model <span class="ot">&lt;-</span> <span class="cf">function</span>(data_melanoma, race, sex, site, <span class="at">kmax =</span> <span class="dv">5</span>) {</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  data_melanoma_filtered <span class="ot">&lt;-</span> data_melanoma <span class="sc">|&gt;</span> </span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Race <span class="sc">==</span> race <span class="sc">&amp;</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>             Sex <span class="sc">==</span> sex <span class="sc">&amp;</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>             Site <span class="sc">==</span> site)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Log-linear model (Poisson)</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  out.glm <span class="ot">&lt;-</span> <span class="fu">glm</span>(Count_adj <span class="sc">~</span> Year, <span class="at">data =</span> data_melanoma_filtered, </span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">family=</span><span class="fu">poisson</span>(), <span class="at">offset=</span><span class="fu">log</span>(Population))</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select the best fit number of joinpoints</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  out.glm.best <span class="ot">&lt;-</span> <span class="fu">selgmented</span>(out.glm, <span class="at">seg.Z =</span> <span class="sc">~</span> Year, <span class="at">Kmax =</span> kmax, <span class="at">type =</span> <span class="st">"bic"</span>, <span class="at">msg =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(out.glm.best) <span class="sc">||</span> <span class="fu">is.null</span>(out.glm.best<span class="sc">$</span>psi) <span class="sc">||</span> <span class="fu">nrow</span>(out.glm.best<span class="sc">$</span>psi) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Identify joinpoints</span></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  num_breakpoints <span class="ot">&lt;-</span> <span class="fu">nrow</span>(out.glm.best<span class="sc">$</span>psi)</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  joinpoint_years <span class="ot">&lt;-</span> <span class="fu">round</span>(out.glm.best<span class="sc">$</span>psi[, <span class="st">'Est.'</span>])</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Identify segment years</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  min_year <span class="ot">&lt;-</span> <span class="fu">min</span>(data_melanoma_filtered<span class="sc">$</span>Year)</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  max_year <span class="ot">&lt;-</span> <span class="fu">max</span>(data_melanoma_filtered<span class="sc">$</span>Year)</span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  year_list <span class="ot">&lt;-</span> <span class="fu">c</span>(min_year, <span class="fu">unname</span>(<span class="fu">unlist</span>(joinpoint_years)), max_year)</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  segment_years <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> num_breakpoints <span class="sc">+</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(year_list)) {</span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    segment_years[i <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> year_list[i <span class="sc">-</span> <span class="dv">1</span>]</span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    segment_years[i <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> year_list[i]</span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># APC / AAPC</span></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  apc <span class="ot">&lt;-</span> <span class="fu">slope</span>(out.glm.best, <span class="at">APC =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>Year</span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  aapc <span class="ot">&lt;-</span> <span class="fu">aapc</span>(out.glm.best, <span class="at">parm =</span> <span class="st">"Year"</span>)</span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">race =</span> race,</span>
-<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> sex,</span>
-<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">site =</span> site,</span>
-<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_breakpoints =</span> num_breakpoints,</span>
-<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">joinpoint_years =</span> joinpoint_years,</span>
-<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">segment_years =</span> segment_years,</span>
-<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">apc =</span> apc,</span>
-<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">aapc =</span> aapc,</span>
-<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">fit =</span> out.glm.best,</span>
-<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_melanoma_filtered</span>
-<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>joinpoint_model <span class="ot">&lt;-</span> <span class="cf">function</span>(data_melanoma, race, sex, site, <span class="at">kmax =</span> <span class="dv">5</span>) {</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  data_melanoma_filtered <span class="ot">&lt;-</span> data_melanoma <span class="sc">|&gt;</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Race <span class="sc">==</span> race <span class="sc">&amp;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>             Sex <span class="sc">==</span> sex <span class="sc">&amp;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>             Site <span class="sc">==</span> site)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Log-linear model (Poisson)</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  out.glm <span class="ot">&lt;-</span> <span class="fu">glm</span>(Count_adj <span class="sc">~</span> Year, <span class="at">data =</span> data_melanoma_filtered, </span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">family=</span><span class="fu">poisson</span>(), <span class="at">offset=</span><span class="fu">log</span>(Population))</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select the best fit number of joinpoints</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  out.glm.best <span class="ot">&lt;-</span> <span class="fu">selgmented</span>(out.glm, <span class="at">seg.Z =</span> <span class="sc">~</span> Year, <span class="at">Kmax =</span> kmax, <span class="at">type =</span> <span class="st">"bic"</span>, <span class="at">msg =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Identify joinpoints</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  num_breakpoints <span class="ot">&lt;-</span> <span class="fu">nrow</span>(out.glm.best<span class="sc">$</span>psi)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  joinpoint_years <span class="ot">&lt;-</span> <span class="fu">round</span>(out.glm.best<span class="sc">$</span>psi[, <span class="st">'Est.'</span>])</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Identify segment years</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  min_year <span class="ot">&lt;-</span> <span class="fu">min</span>(data_melanoma_filtered<span class="sc">$</span>Year)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>  max_year <span class="ot">&lt;-</span> <span class="fu">max</span>(data_melanoma_filtered<span class="sc">$</span>Year)</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  year_list <span class="ot">&lt;-</span> <span class="fu">c</span>(min_year, <span class="fu">unname</span>(<span class="fu">unlist</span>(joinpoint_years)), max_year)</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  segment_years <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> num_breakpoints <span class="sc">+</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(year_list)) {</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    segment_years[i <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> year_list[i <span class="sc">-</span> <span class="dv">1</span>]</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    segment_years[i <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> year_list[i]</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># APC / AAPC</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  apc <span class="ot">&lt;-</span> <span class="fu">slope</span>(out.glm.best, <span class="at">APC =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>Year</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>  aapc <span class="ot">&lt;-</span> <span class="fu">aapc</span>(out.glm.best, <span class="at">parm =</span> <span class="st">"Year"</span>)</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">race =</span> race,</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> sex,</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">site =</span> site,</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_breakpoints =</span> num_breakpoints,</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">joinpoint_years =</span> joinpoint_years,</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">segment_years =</span> segment_years,</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">apc =</span> apc,</span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">aapc =</span> aapc,</span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">fit =</span> out.glm.best,</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_melanoma_filtered</span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>races <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"All races"</span>, <span class="st">"Black"</span>, <span class="st">"White"</span>)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sexes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Male and female"</span>, <span class="st">"Male"</span>, <span class="st">"Female"</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>sites <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"All sites"</span>, <span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>combos_race <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>combos_sex <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>combos_site <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>model_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>num_breakpoints_list <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>joinpoint_years_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>segment_years_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>apc_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>aapc_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (race <span class="cf">in</span> races) {</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (sex <span class="cf">in</span> sexes) {</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (site <span class="cf">in</span> sites) {</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>      model_obj <span class="ot">&lt;-</span> <span class="fu">joinpoint_model</span>(data_melanoma, race, sex, site)</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">is.null</span>(model_obj)) <span class="cf">next</span></span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>      combos_race <span class="ot">&lt;-</span> <span class="fu">c</span>(combos_race, race)</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>      combos_sex <span class="ot">&lt;-</span> <span class="fu">c</span>(combos_sex, sex)</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      combos_site <span class="ot">&lt;-</span> <span class="fu">c</span>(combos_site, site)</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>      model_list[[<span class="fu">length</span>(model_list) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> model_obj</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>      num_breakpoints_list <span class="ot">&lt;-</span> <span class="fu">c</span>(num_breakpoints_list, model_obj<span class="sc">$</span>num_breakpoints)</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>      joinpoint_years_list[[<span class="fu">length</span>(joinpoint_years_list) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> model_obj<span class="sc">$</span>joinpoint_years</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>      segment_years_list[[<span class="fu">length</span>(segment_years_list) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> model_obj<span class="sc">$</span>segment_years</span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>      apc_list[[<span class="fu">length</span>(apc_list) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> model_obj<span class="sc">$</span>apc</span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>      aapc_list[[<span class="fu">length</span>(aapc_list) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> model_obj<span class="sc">$</span>aapc</span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">Race =</span> combos_race,</span>
-<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sex =</span> combos_sex,</span>
-<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">Site =</span> combos_site,</span>
-<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">Num_Breakpoints =</span> num_breakpoints_list,</span>
-<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">Joinpoint_Years =</span> <span class="fu">I</span>(joinpoint_years_list),</span>
-<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">Segment_Years =</span> <span class="fu">I</span>(segment_years_list),</span>
-<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">APC =</span> <span class="fu">I</span>(apc_list),</span>
-<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">AAPC =</span> <span class="fu">I</span>(aapc_list),</span>
-<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">I</span>(model_list),</span>
-<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
-<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>races <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"All races"</span>, <span class="st">"Black"</span>, <span class="st">"White"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sexes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Male and female"</span>, <span class="st">"Male"</span>, <span class="st">"Female"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>sites <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"All sites"</span>, <span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand_grid</span>(<span class="at">Race =</span> races, <span class="at">Sex =</span> sexes, <span class="at">Site =</span> sites)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>future<span class="sc">::</span><span class="fu">plan</span>(multisession)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> grid <span class="sc">|&gt;</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">Model =</span> <span class="fu">future_pmap</span>(</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">list</span>(Race, Sex, Site),</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>      <span class="cf">function</span>(race, sex, site) {</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tryCatch</span>(</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>          <span class="fu">joinpoint_model</span>(data_melanoma, race, sex, site),</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">error =</span> <span class="cf">function</span>(e) <span class="cn">NULL</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>      },</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">.options =</span> <span class="fu">furrr_options</span>(<span class="at">seed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">map_lgl</span>(Model, is.null)) <span class="sc">|&gt;</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">Num_Breakpoints =</span> <span class="fu">map_int</span>(Model, <span class="st">"num_breakpoints"</span>),</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">Joinpoint_Years =</span> <span class="fu">map</span>(Model, <span class="st">"joinpoint_years"</span>),</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">Segment_Years =</span> <span class="fu">map</span>(Model, <span class="st">"segment_years"</span>),</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">APC =</span> <span class="fu">map</span>(Model, <span class="st">"apc"</span>),</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">AAPC =</span> <span class="fu">map</span>(Model, <span class="st">"aapc"</span>)</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>models</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>models</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        Race             Sex                     Site Num_Breakpoints
-1  All races Male and female                All sites               5
-2  All races Male and female            Head and Neck               5
-3  All races Male and female                    Trunk               5
-4  All races Male and female Arm (shoulder to finger)               4
-5  All races Male and female         Leg (hip to toe)               6
-6  All races            Male                All sites               5
-7  All races            Male            Head and Neck               5
-8  All races            Male                    Trunk               5
-9  All races            Male Arm (shoulder to finger)               5
-10 All races            Male         Leg (hip to toe)               5
-11 All races          Female                All sites               4
-12 All races          Female            Head and Neck               4
-13 All races          Female                    Trunk               4
-14 All races          Female Arm (shoulder to finger)               6
-15 All races          Female         Leg (hip to toe)               6
-16     Black Male and female                All sites               5
-17     Black Male and female            Head and Neck               5
-18     Black Male and female                    Trunk               1
-19     Black Male and female Arm (shoulder to finger)               3
-20     Black Male and female         Leg (hip to toe)               5
-21     Black            Male                All sites               5
-22     Black            Male            Head and Neck               4
-23     Black            Male                    Trunk               3
-24     Black            Male Arm (shoulder to finger)               1
-25     Black            Male         Leg (hip to toe)               5
-26     Black          Female                All sites               5
-27     Black          Female            Head and Neck               5
-28     Black          Female Arm (shoulder to finger)               5
-29     Black          Female         Leg (hip to toe)               7
-30     White Male and female                All sites               2
-31     White Male and female            Head and Neck               5
-32     White Male and female                    Trunk               5
-33     White Male and female Arm (shoulder to finger)               5
-34     White Male and female         Leg (hip to toe)               6
-35     White            Male                All sites               6
-36     White            Male            Head and Neck               5
-37     White            Male                    Trunk               5
-38     White            Male Arm (shoulder to finger)               5
-39     White            Male         Leg (hip to toe)               6
-40     White          Female                All sites               5
-41     White          Female            Head and Neck               5
-42     White          Female                    Trunk               5
-43     White          Female Arm (shoulder to finger)               5
-44     White          Female         Leg (hip to toe)               6
-   Joinpoint_Years Segment_Years          APC         AAPC        Model
-1     1985, 19....  1975, 19.... 4.3892, .... 0.024123.... All race....
-2     1977, 19....  1975, 19.... 1.8027, .... 0.024301.... All race....
-3     1976, 19....  1975, 19.... 6.2744, .... 0.024452.... All race....
-4     1980, 19....  1975, 19.... 6.0689, .... 0.026738.... All race....
-5     1980, 19....  1975, 19.... 1.1386, .... 0.016755.... All race....
-6     1985, 19....  1975, 19.... 5.0773, .... 0.026843.... All race....
-7     1985, 19....  1975, 19.... 5.2029, .... 0.030102.... All race....
-8     1979, 19....  1975, 19.... 7.3627, .... 0.024365.... All race....
-9     1987, 19....  1975, 19.... 5.1796, .... 0.030825.... All race....
-10    1982, 19....  1975, 19.... 4.7524, .... 0.023697.... All race....
-11    1981, 19....  1975, 19.... 4.9915, .... 0.020591.... All race....
-12    1981, 19....  1975, 19.... 2.3685, .... 0.016026.... All race....
-13    1988, 20....  1975, 19.... 4.2237, .... 0.024070.... All race....
-14    1981, 19....  1975, 19.... 6.1517, .... 0.024245.... All race....
-15    1982, 19....  1975, 19.... 4.4056, .... 0.016307.... All race....
-16    1978, 19....  1975, 19.... -26.174,.... -0.01796.... Black, M....
-17    1981, 19....  1975, 19.... -32.085,.... -0.02769.... Black, M....
-18            1986  1975, 19.... 9.5118, .... 0.022126.... Black, M....
-19    1986, 19....  1975, 19.... 3.6818, .... 0.007409.... Black, M....
-20    1977, 19....  1975, 19.... -23.567,.... -0.01212.... Black, M....
-21    1978, 19....  1975, 19.... -40.215,.... -0.03001.... Black, M....
-22    1980, 19....  1975, 19.... -39.442,.... -0.00376.... Black, M....
-23    1987, 20....  1975, 19.... 43.326, .... 0.057983.... Black, M....
-24            1989  1975, 19.... 19.793, .... 0.050850.... Black, M....
-25    1979, 19....  1975, 19.... -37.182,.... -0.04622.... Black, M....
-26    1978, 19....  1975, 19.... -11.836,.... -0.00461.... Black, F....
-27    1982, 19....  1975, 19.... -31.715,.... -0.04061.... Black, F....
-28    1981, 19....  1975, 19.... -15.815,.... -0.01437.... Black, F....
-29    1978, 19....  1975, 19.... 13.542, .... 0.008872.... Black, F....
-30      1981, 2009  1975, 19.... 5.6119, .... 0.028216.... White, M....
-31    1982, 19....  1975, 19.... 3.5851, .... 0.028418.... White, M....
-32    1980, 19....  1975, 19.... 7.5944, .... 0.029151.... White, M....
-33    1980, 19....  1975, 19.... 6.3003, .... 0.030143.... White, M....
-34    1980, 19....  1975, 19.... 2.0633, .... 0.020761.... White, M....
-35    1983, 19....  1975, 19.... 5.7594, .... 0.030943.... White, M....
-36    1994, 20....  1975, 19.... 5.1138, .... 0.033626.... White, M....
-37    1986, 19....  1975, 19.... 5.8485, .... 0.026774.... White, M....
-38    1980, 19....  1975, 19.... 6.1715, .... 0.034051.... White, M....
-39    1989, 20....  1975, 19.... 3.0322, .... 0.025072.... White, M....
-40    1982, 19....  1975, 19.... 4.9671, .... 0.024623.... White, F....
-41    1980, 19....  1975, 19.... 3.4722, .... 0.020628.... White, F....
-42    1978, 19....  1975, 19.... 11.423, .... 0.031297.... White, F....
-43    1981, 19....  1975, 19.... 6.1728, .... 0.027168.... White, F....
-44    1977, 19....  1975, 19.... 1.9372, .... 0.019701.... White, F....</code></pre>
+<pre><code># A tibble: 44 × 9
+   Race   Sex   Site  Model        Num_Breakpoints Joinpoint_Years Segment_Years
+   &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt; &lt;list&gt;                 &lt;int&gt; &lt;list&gt;          &lt;list&gt;       
+ 1 All r… Male… All … &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+ 2 All r… Male… Head… &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+ 3 All r… Male… Trunk &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+ 4 All r… Male… Arm … &lt;named list&gt;               4 &lt;dbl [4]&gt;       &lt;dbl [5 × 2]&gt;
+ 5 All r… Male… Leg … &lt;named list&gt;               6 &lt;dbl [6]&gt;       &lt;dbl [7 × 2]&gt;
+ 6 All r… Male  All … &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+ 7 All r… Male  Head… &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+ 8 All r… Male  Trunk &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+ 9 All r… Male  Arm … &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+10 All r… Male  Leg … &lt;named list&gt;               5 &lt;dbl [5]&gt;       &lt;dbl [6 × 2]&gt;
+# ℹ 34 more rows
+# ℹ 2 more variables: APC &lt;list&gt;, AAPC &lt;list&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>get_model <span class="ot">&lt;-</span> <span class="cf">function</span>(models, race, sex, site) {</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>(models<span class="sc">$</span>Race <span class="sc">==</span> race</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>               <span class="sc">&amp;</span> models<span class="sc">$</span>Sex <span class="sc">==</span> sex</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>               <span class="sc">&amp;</span> models<span class="sc">$</span>Site <span class="sc">==</span> site)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(idx) <span class="sc">&gt;</span> <span class="dv">1</span>) {</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">&lt;-</span> idx[<span class="dv">1</span>]</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  models<span class="sc">$</span>Model[[idx]]</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>get_model <span class="ot">&lt;-</span> <span class="cf">function</span>(models, race, sex, site) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>(models<span class="sc">$</span>Race <span class="sc">==</span> race</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>               <span class="sc">&amp;</span> models<span class="sc">$</span>Sex <span class="sc">==</span> sex</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>               <span class="sc">&amp;</span> models<span class="sc">$</span>Site <span class="sc">==</span> site)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(idx) <span class="sc">&gt;</span> <span class="dv">1</span>) {</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">&lt;-</span> idx[<span class="dv">1</span>]</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  models<span class="sc">$</span>Model[[idx]]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>plot_joinpoint_set <span class="ot">&lt;-</span> <span class="cf">function</span>(model_objs, labels, cols,</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                               main, <span class="at">ylab =</span> <span class="st">"Rate per 100,000"</span>) {</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  df_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(model_objs)) {</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    m <span class="ot">&lt;-</span> model_objs[[i]]</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    d <span class="ot">&lt;-</span> m<span class="sc">$</span>data</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    year_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(d<span class="sc">$</span>Year), <span class="fu">max</span>(d<span class="sc">$</span>Year), <span class="at">by =</span> <span class="dv">1</span>)</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    pred_rate <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">predict</span>(m<span class="sc">$</span>fit, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Year =</span> year_grid),</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                             <span class="at">type =</span> <span class="st">"link"</span>)) <span class="sc">*</span> <span class="dv">100000</span></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    df_list[[i]] <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(<span class="at">Year =</span> d<span class="sc">$</span>Year, <span class="at">Rate =</span> d<span class="sc">$</span>Rate, <span class="at">Series =</span> labels[i], <span class="at">Type =</span> <span class="st">"Observed"</span>),</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(<span class="at">Year =</span> year_grid, <span class="at">Rate =</span> pred_rate, <span class="at">Series =</span> labels[i], <span class="at">Type =</span> <span class="st">"Fitted"</span>)</span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  plot_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, df_list)</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  ylim_max <span class="ot">&lt;-</span> <span class="fu">max</span>(plot_df<span class="sc">$</span>Rate[plot_df<span class="sc">$</span>Type <span class="sc">==</span> <span class="st">"Fitted"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(plot_df, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Rate, <span class="at">group =</span> Series)) <span class="sc">+</span></span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(plot_df, Type <span class="sc">==</span> <span class="st">"Fitted"</span>), <span class="fu">aes</span>(<span class="at">color =</span> Series), <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> cols, <span class="at">breaks =</span> labels) <span class="sc">+</span></span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, ylim_max)) <span class="sc">+</span></span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> main, <span class="at">y =</span> ylab, <span class="at">color =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>plot_joinpoint_set <span class="ot">&lt;-</span> <span class="cf">function</span>(model_objs, labels, cols,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                               main, <span class="at">ylab =</span> <span class="st">"Rate per 100,000"</span>) {</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Helper to plot multiple data frames</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  make_series_df <span class="ot">&lt;-</span> <span class="cf">function</span>(model_obj, label) {</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    d <span class="ot">&lt;-</span> model_obj<span class="sc">$</span>data</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    year_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(d<span class="sc">$</span>Year), <span class="fu">max</span>(d<span class="sc">$</span>Year), <span class="at">by =</span> <span class="dv">1</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    fitted_rate <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_obj<span class="sc">$</span>fit,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Year =</span> year_grid),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">"link"</span>) <span class="sc">|&gt;</span> <span class="fu">exp</span>() <span class="sc">*</span> <span class="dv">100000</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    observed_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">Year =</span> d<span class="sc">$</span>Year,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">Rate =</span> d<span class="sc">$</span>Rate,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">Series =</span> label,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">Type =</span> <span class="st">"Observed"</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    fitted_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">Year =</span> year_grid,</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">Rate =</span> fitted_rate,</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">Series =</span> label,</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">Type =</span> <span class="st">"Fitted"</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(observed_df, fitted_df)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Perform the plotting</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  plot_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Map</span>(make_series_df, model_objs, labels)</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  ylim_max <span class="ot">&lt;-</span> plot_df <span class="sc">|&gt;</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Type <span class="sc">==</span> <span class="st">"Fitted"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">max_rate =</span> <span class="fu">max</span>(Rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(max_rate)</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(plot_df, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Rate, <span class="at">group =</span> Series)) <span class="sc">+</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> <span class="fu">filter</span>(plot_df, Type <span class="sc">==</span> <span class="st">"Fitted"</span>),</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">color =</span> Series),</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> cols, <span class="at">breaks =</span> labels) <span class="sc">+</span></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, ylim_max)) <span class="sc">+</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> main, <span class="at">y =</span> ylab, <span class="at">color =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Sex</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>m_overall <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>m_male    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>m_female  <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_female, m_male, m_overall),</span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>, <span class="st">"Overall"</span>),</span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"black"</span>),</span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma Cases</span><span class="sc">\n</span><span class="st">by Sex (Male and Female) from 1975-2022"</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Sex</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>m_overall <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>m_male <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>m_female <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_female, m_male, m_overall),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>, <span class="st">"Overall"</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"black"</span>),</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma Cases</span><span class="sc">\n</span><span class="st">by Sex (Male and Female) from 1975-2022"</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -527,16 +417,16 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>m_black <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>m_white <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_black, m_white, m_overall),</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Black"</span>, <span class="st">"White"</span>, <span class="st">"Overall"</span>),</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"black"</span>),</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (Black and White), 1975-2022"</span></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>m_black <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>m_white <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_black, m_white, m_overall),</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Black"</span>, <span class="st">"White"</span>, <span class="st">"Overall"</span>),</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"black"</span>),</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (Black and White), 1975-2022"</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -546,18 +436,18 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by anatomical location (Site)</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>m_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Head and Neck"</span>)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>m_trunk    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Trunk"</span>)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>m_arm      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>m_leg      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_headneck, m_trunk, m_arm, m_leg, m_overall),</span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm"</span>, <span class="st">"Leg"</span>, <span class="st">"Overall"</span>),</span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Subtype (Anatomical Location), 1975-2022"</span></span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by anatomical location (Site)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>m_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Head and Neck"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>m_trunk <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Trunk"</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>m_arm <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>m_leg <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male and female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_headneck, m_trunk, m_arm, m_leg, m_overall),</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm"</span>, <span class="st">"Leg"</span>, <span class="st">"Overall"</span>),</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Subtype (Anatomical Location), 1975-2022"</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -567,18 +457,18 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race (Black/White) and Sex (Male/Female)</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>m_black_male    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>m_white_male    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>m_black_female  <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Female"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>m_white_female  <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Female"</span>, <span class="st">"All sites"</span>)</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_black_male, m_white_male, m_black_female, m_white_female, m_overall),</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Black Male"</span>, <span class="st">"White Male"</span>, <span class="st">"Black Female"</span>, <span class="st">"White Female"</span>, <span class="st">"Overall"</span>),</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (Black or White) and Sex (Male or Female), 1975-2022"</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race (Black/White) and Sex (Male/Female)</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>m_black_male <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>m_white_male <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>m_black_female <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Female"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>m_white_female <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Female"</span>, <span class="st">"All sites"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_black_male, m_white_male, m_black_female, m_white_female, m_overall),</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Black Male"</span>, <span class="st">"White Male"</span>, <span class="st">"Black Female"</span>, <span class="st">"White Female"</span>, <span class="st">"Overall"</span>),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (Black or White) and Sex (Male or Female), 1975-2022"</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -588,18 +478,18 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Sex (Male) and Site</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>m_male_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Head and Neck"</span>)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>m_male_trunk    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Trunk"</span>)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>m_male_arm      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>m_male_leg      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_male_headneck, m_male_trunk, m_male_arm, m_male_leg, m_male),</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"Male Overall"</span>),</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Sex (Male) and Subtype (Anatomical Location), 1975-2022"</span></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Sex (Male) and Site</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>m_male_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Head and Neck"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>m_male_trunk <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Trunk"</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>m_male_arm <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>m_male_leg <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Male"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_male_headneck, m_male_trunk, m_male_arm, m_male_leg, m_male),</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"Male Overall"</span>),</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Sex (Male) and Subtype (Anatomical Location), 1975-2022"</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -609,18 +499,18 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Sex (Female) and Site</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>m_female_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Head and Neck"</span>)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>m_female_trunk    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Trunk"</span>)</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>m_female_arm      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>m_female_leg      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_female_headneck, m_female_trunk, m_female_arm, m_female_leg, m_female),</span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"Female Overall"</span>),</span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Sex (Female) and Subtype (Anatomical Location), 1975-2022"</span></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Sex (Female) and Site</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>m_female_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Head and Neck"</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>m_female_trunk <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Trunk"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>m_female_arm <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>m_female_leg <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"All races"</span>, <span class="st">"Female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_female_headneck, m_female_trunk, m_female_arm, m_female_leg, m_female),</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"Female Overall"</span>),</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Sex (Female) and Subtype (Anatomical Location), 1975-2022"</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -630,19 +520,19 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race (White) and Site</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>m_white_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Head and Neck"</span>)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>m_white_trunk    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Trunk"</span>)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>m_white_arm      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>m_white_leg      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_white_headneck, m_white_trunk, m_white_arm, m_white_leg,</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)),</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"White Overall"</span>),</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (White) and Subtype (Anatomical Location), 1975-2022"</span></span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race (White) and Site</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>m_white_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Head and Neck"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>m_white_trunk <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Trunk"</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>m_white_arm <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>m_white_leg <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_white_headneck, m_white_trunk, m_white_arm, m_white_leg,</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">get_model</span>(models, <span class="st">"White"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)),</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"White Overall"</span>),</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (White) and Subtype (Anatomical Location), 1975-2022"</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -652,19 +542,19 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race (Black) and Site</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>m_black_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Head and Neck"</span>)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>m_black_trunk    <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Trunk"</span>)</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>m_black_arm      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>m_black_leg      <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_black_headneck, m_black_trunk, m_black_arm, m_black_leg,</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)),</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"Black Overall"</span>),</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (Black) and Subtype (Anatomical Location), 1975-2022"</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratified by Race (Black) and Site</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>m_black_headneck <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Head and Neck"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>m_black_trunk <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Trunk"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>m_black_arm <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Arm (shoulder to finger)"</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>m_black_leg <span class="ot">&lt;-</span> <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"Leg (hip to toe)"</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_joinpoint_set</span>(</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(m_black_headneck, m_black_trunk, m_black_arm, m_black_leg,</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">get_model</span>(models, <span class="st">"Black"</span>, <span class="st">"Male and female"</span>, <span class="st">"All sites"</span>)),</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Head and Neck"</span>, <span class="st">"Trunk"</span>, <span class="st">"Arm (shoulder to finger)"</span>, <span class="st">"Leg (hip to toe)"</span>, <span class="st">"Black Overall"</span>),</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols   =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"blue"</span>, <span class="st">"gold"</span>, <span class="st">"purple"</span>, <span class="st">"black"</span>),</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">main   =</span> <span class="st">"Age-adjusted incidence of Melanoma cases</span><span class="sc">\n</span><span class="st">by Race (Black) and Subtype (Anatomical Location), 1975-2022"</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -677,21 +567,21 @@ slope6 0.30478   0.30422   0.30534</code></pre>
 <section id="appendix-all-model-output" class="level1">
 <h1>Appendix: All Model Output</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(models))) {</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=======================</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Row:"</span>, i, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Race:"</span>, models<span class="sc">$</span>Race[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Sex:"</span>, models<span class="sc">$</span>Sex[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Site:"</span>, models<span class="sc">$</span>Site[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Num_Breakpoints:"</span>, models<span class="sc">$</span>Num_Breakpoints[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Joinpoint_Years:"</span>, <span class="fu">paste</span>(models<span class="sc">$</span>Joinpoint_Years[[i]], <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Segment_Years:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(models<span class="sc">$</span>Segment_Years[[i]])</span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"APC:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(models<span class="sc">$</span>APC[[i]])</span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"AAPC:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(models<span class="sc">$</span>AAPC[[i]])</span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(models))) {</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=======================</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Row:"</span>, i, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Race:"</span>, models<span class="sc">$</span>Race[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Sex:"</span>, models<span class="sc">$</span>Sex[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Site:"</span>, models<span class="sc">$</span>Site[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Num_Breakpoints:"</span>, models<span class="sc">$</span>Num_Breakpoints[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Joinpoint_Years:"</span>, <span class="fu">paste</span>(models<span class="sc">$</span>Joinpoint_Years[[i]], <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Segment_Years:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(models<span class="sc">$</span>Segment_Years[[i]])</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"APC:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(models<span class="sc">$</span>APC[[i]])</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"AAPC:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(models<span class="sc">$</span>AAPC[[i]])</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 =======================
@@ -1133,28 +1023,28 @@ Race: Black
 Sex: Male and female 
 Site: All sites 
 Num_Breakpoints: 5 
-Joinpoint_Years: 1978, 1988, 1992, 2003, 2014 
+Joinpoint_Years: 1978, 1988, 2002, 2007, 2014 
 Segment_Years:
      [,1] [,2]
 [1,] 1975 1978
 [2,] 1978 1988
-[3,] 1988 1992
-[4,] 1992 2003
-[5,] 2003 2014
+[3,] 1988 2002
+[4,] 2002 2007
+[5,] 2007 2014
 [6,] 2014 2022
 APC:
-             Est.  CI(95%).l  CI(95%).u
-slope1 -26.174000 -26.237000 -26.110000
-slope2   7.329200   7.308100   7.350300
-slope3  -9.517700  -9.605300  -9.430000
-slope4   0.663010   0.648720   0.677310
-slope5  -0.037306  -0.049133  -0.025478
-slope6  -3.906900  -3.921800  -3.892000
+           Est. CI(95%).l CI(95%).u
+slope1 -30.2480  -30.3360  -30.1610
+slope2   5.0831    5.0648    5.1015
+slope3  -2.0628   -2.0722   -2.0534
+slope4   5.3123    5.2700    5.3547
+slope5  -2.5773   -2.5993   -2.5552
+slope6  -2.9461   -2.9644   -2.9279
 AAPC:
          Est.        St.Err     CI(95%).l     CI(95%).u 
--1.796532e-02  1.666616e-05 -1.799798e-02 -1.793265e-02 
+-1.811857e-02  1.757802e-05 -1.815302e-02 -1.808412e-02 
 attr(,"wrong.se")
-[1] 5.75047e-05
+[1] 5.400031e-05
 
 =======================
 Row: 17 
@@ -1162,28 +1052,28 @@ Race: Black
 Sex: Male and female 
 Site: Head and Neck 
 Num_Breakpoints: 5 
-Joinpoint_Years: 1981, 1987, 2001, 2016, 2019 
+Joinpoint_Years: 1980, 1987, 2000, 2007, 2014 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1981
-[2,] 1981 1987
-[3,] 1987 2001
-[4,] 2001 2016
-[5,] 2016 2019
-[6,] 2019 2022
+[1,] 1975 1980
+[2,] 1980 1987
+[3,] 1987 2000
+[4,] 2000 2007
+[5,] 2007 2014
+[6,] 2014 2022
 APC:
-            Est. CI(95%).l CI(95%).u
-slope1 -32.08500 -32.20200 -31.96700
-slope2  37.68400  37.49300  37.87500
-slope3   0.38465   0.35629   0.41302
-slope4  -6.09110  -6.11590  -6.06630
-slope5  64.95000  64.55200  65.34900
-slope6 -36.72300 -36.81900 -36.62700
+           Est. CI(95%).l CI(95%).u
+slope1 -37.0500  -37.1590  -36.9410
+slope2  30.3120   30.0640   30.5600
+slope3   1.4398    1.4135    1.4662
+slope4  -9.2107   -9.2894   -9.1320
+slope5   1.8612    1.7966    1.9257
+slope6   3.1529    3.0990    3.2069
 AAPC:
          Est.        St.Err     CI(95%).l     CI(95%).u 
--0.0276983320  0.0000543063 -0.0278047704 -0.0275918936 
+-1.145582e-02  4.540852e-05 -1.154482e-02 -1.136682e-02 
 attr(,"wrong.se")
-[1] 0.000182854
+[1] 0.0001983203
 
 =======================
 Row: 18 
@@ -1191,45 +1081,41 @@ Race: Black
 Sex: Male and female 
 Site: Trunk 
 Num_Breakpoints: 1 
-Joinpoint_Years: 1986 
+Joinpoint_Years: 1991 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1986
-[2,] 1986 2022
+[1,] 1975 1991
+[2,] 1991 2022
 APC:
-          Est. CI(95%).l CI(95%).u
-slope1 9.51180   9.43840   9.58530
-slope2 0.12819   0.12312   0.13327
+           Est. CI(95%).l CI(95%).u
+slope1  5.84640   5.81440    5.8786
+slope2 -0.19611  -0.20222   -0.1900
 AAPC:
         Est.       St.Err    CI(95%).l    CI(95%).u 
-2.212617e-02 4.022642e-05 2.204733e-02 2.220501e-02 
+1.804751e-02 3.497579e-05 1.797896e-02 1.811607e-02 
 attr(,"wrong.se")
-[1] 8.207011e-05
+[1] 5.65554e-05
 
 =======================
 Row: 19 
 Race: Black 
 Sex: Male and female 
 Site: Arm (shoulder to finger) 
-Num_Breakpoints: 3 
-Joinpoint_Years: 1986, 1998, 2011 
+Num_Breakpoints: 1 
+Joinpoint_Years: 2011 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1986
-[2,] 1986 1998
-[3,] 1998 2011
-[4,] 2011 2022
+[1,] 1975 2011
+[2,] 2011 2022
 APC:
-           Est. CI(95%).l CI(95%).u
-slope1  3.68180   3.62760   3.73600
-slope2  0.69227   0.65658   0.72798
-slope3  2.93610   2.90990   2.96230
-slope4 -4.75020  -4.77800  -4.72230
+          Est. CI(95%).l CI(95%).u
+slope1  2.1864    2.1796    2.1931
+slope2 -4.3111   -4.3391   -4.2832
 AAPC:
         Est.       St.Err    CI(95%).l    CI(95%).u 
-0.0074091756 0.0000404334 0.0073299276 0.0074884236 
+0.0062523505 0.0000260699 0.0062012544 0.0063034465 
 attr(,"wrong.se")
-[1] 9.253994e-05
+[1] 4.346182e-05
 
 =======================
 Row: 20 
@@ -1294,27 +1180,21 @@ Row: 22
 Race: Black 
 Sex: Male 
 Site: Head and Neck 
-Num_Breakpoints: 4 
-Joinpoint_Years: 1980, 1995, 2005, 2014 
+Num_Breakpoints: 1 
+Joinpoint_Years: 1995 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1980
-[2,] 1980 1995
-[3,] 1995 2005
-[4,] 2005 2014
-[5,] 2014 2022
+[1,] 1975 1995
+[2,] 1995 2022
 APC:
-           Est. CI(95%).l CI(95%).u
-slope1 -39.4420  -39.5710  -39.3130
-slope2  23.4600   23.3960   23.5240
-slope3 -12.7020  -12.7420  -12.6620
-slope4  -2.2509   -2.3088   -2.1929
-slope5  13.4050   13.3400   13.4710
+          Est. CI(95%).l CI(95%).u
+slope1  7.8400    7.8083    7.8716
+slope2 -2.5608   -2.5702   -2.5514
 AAPC:
-         Est.        St.Err     CI(95%).l     CI(95%).u 
--3.768170e-03  5.348613e-05 -3.873001e-03 -3.663339e-03 
+        Est.       St.Err    CI(95%).l    CI(95%).u 
+1.721376e-02 4.269512e-05 1.713007e-02 1.729744e-02 
 attr(,"wrong.se")
-[1] 0.0001748859
+[1] 6.975739e-05
 
 =======================
 Row: 23 
@@ -1346,50 +1226,52 @@ Row: 24
 Race: Black 
 Sex: Male 
 Site: Arm (shoulder to finger) 
-Num_Breakpoints: 1 
-Joinpoint_Years: 1989 
+Num_Breakpoints: 3 
+Joinpoint_Years: 1986, 1996, 1998 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1989
-[2,] 1989 2022
+[1,] 1975 1986
+[2,] 1986 1996
+[3,] 1996 1998
+[4,] 1998 2022
 APC:
            Est. CI(95%).l CI(95%).u
-slope1 19.79300   19.7050  19.88200
-slope2 -0.41851   -0.4258  -0.41121
+slope1   6.2222     6.085    6.3595
+slope2  19.6950    19.625   19.7660
+slope3 -43.7960   -43.933  -43.6580
+slope4   1.4987     1.486    1.5113
 AAPC:
         Est.       St.Err    CI(95%).l    CI(95%).u 
-5.085023e-02 7.964596e-05 5.069412e-02 5.100633e-02 
+0.0354534094 0.0000716088 0.0353130587 0.0355937600 
 attr(,"wrong.se")
-[1] 0.0001154459
+[1] 0.0001781903
 
 =======================
 Row: 25 
 Race: Black 
 Sex: Male 
 Site: Leg (hip to toe) 
-Num_Breakpoints: 5 
-Joinpoint_Years: 1979, 1990, 1992, 1999, 2015 
+Num_Breakpoints: 4 
+Joinpoint_Years: 1978, 1996, 1999, 2015 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1979
-[2,] 1979 1990
-[3,] 1990 1992
-[4,] 1992 1999
-[5,] 1999 2015
-[6,] 2015 2022
+[1,] 1975 1978
+[2,] 1978 1996
+[3,] 1996 1999
+[4,] 1999 2015
+[5,] 2015 2022
 APC:
            Est. CI(95%).l CI(95%).u
-slope1 -37.1820  -37.2440  -37.1200
-slope2  11.7670   11.7270   11.8070
-slope3 -60.3690  -60.4630  -60.2750
-slope4  25.9010   25.8260   25.9770
-slope5  -1.7457   -1.7567   -1.7348
-slope6 -13.5080  -13.5520  -13.4650
+slope1 -38.6950  -38.8030  -38.5870
+slope2  -1.0324   -1.0465   -1.0182
+slope3  23.8450   23.5650   24.1250
+slope4  -1.3447   -1.3558   -1.3337
+slope5 -13.0640  -13.0980  -13.0300
 AAPC:
          Est.        St.Err     CI(95%).l     CI(95%).u 
--4.622662e-02  2.759254e-05 -4.628070e-02 -4.617254e-02 
+-4.645527e-02  2.797304e-05 -4.651010e-02 -4.640045e-02 
 attr(,"wrong.se")
-[1] 0.0001008995
+[1] 9.341544e-05
 
 =======================
 Row: 26 
@@ -1397,57 +1279,51 @@ Race: Black
 Sex: Female 
 Site: All sites 
 Num_Breakpoints: 5 
-Joinpoint_Years: 1978, 1987, 2002, 2005, 2020 
+Joinpoint_Years: 1981, 1984, 1990, 2001, 2006 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1978
-[2,] 1978 1987
-[3,] 1987 2002
-[4,] 2002 2005
-[5,] 2005 2020
-[6,] 2020 2022
+[1,] 1975 1981
+[2,] 1981 1984
+[3,] 1984 1990
+[4,] 1990 2001
+[5,] 2001 2006
+[6,] 2006 2022
 APC:
-           Est. CI(95%).l CI(95%).u
-slope1 -11.8360  -12.0050  -11.6680
-slope2   3.7377    3.7039    3.7714
-slope3  -4.7563   -4.7693   -4.7433
-slope4  21.4610   21.3490   21.5720
-slope5  -3.8725   -3.8837   -3.8614
-slope6  14.4700   14.3320   14.6080
+          Est. CI(95%).l CI(95%).u
+slope1 -6.2389   -6.2875   -6.1902
+slope2 25.5370   25.0850   25.9900
+slope3 -4.1472   -4.1973   -4.0970
+slope4 -4.4765   -4.4951   -4.4579
+slope5 12.8810   12.8100   12.9520
+slope6 -2.8503   -2.8595   -2.8412
 AAPC:
          Est.        St.Err     CI(95%).l     CI(95%).u 
--0.0046168707  0.0000303561 -0.0046763676 -0.0045573739 
+-9.670361e-03  2.182021e-05 -9.713128e-03 -9.627594e-03 
 attr(,"wrong.se")
-[1] 8.541886e-05
+[1] 0.0001165399
 
 =======================
 Row: 27 
 Race: Black 
 Sex: Female 
 Site: Head and Neck 
-Num_Breakpoints: 5 
-Joinpoint_Years: 1982, 1984, 1991, 2016, 2018 
+Num_Breakpoints: 2 
+Joinpoint_Years: 2016, 2018 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1982
-[2,] 1982 1984
-[3,] 1984 1991
-[4,] 1991 2016
-[5,] 2016 2018
-[6,] 2018 2022
+[1,] 1975 2016
+[2,] 2016 2018
+[3,] 2018 2022
 APC:
-           Est. CI(95%).l CI(95%).u
-slope1 -31.7150  -31.9320  -31.4970
-slope2 387.5900  384.1400  391.0600
-slope3 -20.5460  -20.6930  -20.3990
-slope4   2.6101    2.5896    2.6306
-slope5  54.2150   53.6160   54.8170
-slope6 -43.8420  -44.0100  -43.6730
+             Est.  CI(95%).l  CI(95%).u
+slope1   0.034003   0.024247   0.043759
+slope2  70.989000  70.324000  71.656000
+slope3 -44.314000 -44.481000 -44.147000
 AAPC:
          Est.        St.Err     CI(95%).l     CI(95%).u 
--4.061761e-02  9.334806e-05 -4.080057e-02 -4.043465e-02 
+-2.669863e-02  7.844408e-05 -2.685237e-02 -2.654488e-02 
 attr(,"wrong.se")
-[1] 0.0003590695
+[1] 0.0001611134
 
 =======================
 Row: 28 
@@ -1516,23 +1392,29 @@ Row: 30
 Race: White 
 Sex: Male and female 
 Site: All sites 
-Num_Breakpoints: 2 
-Joinpoint_Years: 1981, 2009 
+Num_Breakpoints: 5 
+Joinpoint_Years: 1985, 2010, 2012, 2014, 2020 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1981
-[2,] 1981 2009
-[3,] 2009 2022
+[1,] 1975 1985
+[2,] 1985 2010
+[3,] 2010 2012
+[4,] 2012 2014
+[5,] 2014 2020
+[6,] 2020 2022
 APC:
           Est. CI(95%).l CI(95%).u
-slope1 5.61190   5.60770   5.61600
-slope2 3.25430   3.25410   3.25460
-slope3 0.77341   0.77282   0.77399
+slope1  4.3368    4.3350    4.3386
+slope2  3.2125    3.2122    3.2128
+slope3 -4.9689   -4.9799   -4.9579
+slope4  7.2333    7.2273    7.2393
+slope5 -1.0635   -1.0658   -1.0611
+slope6  1.5493    1.5437    1.5548
 AAPC:
         Est.       St.Err    CI(95%).l    CI(95%).u 
-2.821649e-02 1.424970e-06 2.821370e-02 2.821928e-02 
+2.732361e-02 1.294528e-06 2.732108e-02 2.732615e-02 
 attr(,"wrong.se")
-[1] 2.614306e-06
+[1] 3.853784e-06
 
 =======================
 Row: 31 
@@ -1775,31 +1657,27 @@ Row: 39
 Race: White 
 Sex: Male 
 Site: Leg (hip to toe) 
-Num_Breakpoints: 6 
-Joinpoint_Years: 1989, 2000, 2002, 2008, 2011, 2015 
+Num_Breakpoints: 4 
+Joinpoint_Years: 1991, 1999, 2007, 2015 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1989
-[2,] 1989 2000
-[3,] 2000 2002
-[4,] 2002 2008
-[5,] 2008 2011
-[6,] 2011 2015
-[7,] 2015 2022
+[1,] 1975 1991
+[2,] 1991 1999
+[3,] 1999 2007
+[4,] 2007 2015
+[5,] 2015 2022
 APC:
            Est. CI(95%).l CI(95%).u
-slope1  3.03220   3.02780   3.03660
-slope2  4.18090   4.17610   4.18580
-slope3 -3.35980  -3.41610  -3.30350
-slope4  5.43700   5.42920   5.44480
-slope5 -2.59090  -2.61570  -2.56600
-slope6  5.31500   5.28950   5.34050
-slope7 -0.83013  -0.83512  -0.82514
+slope1  3.14630    3.1428    3.1499
+slope2  3.96540    3.9576    3.9732
+slope3  2.68270    2.6774    2.6881
+slope4  2.41760    2.4121    2.4231
+slope5 -0.45545   -0.4616   -0.4493
 AAPC:
         Est.       St.Err    CI(95%).l    CI(95%).u 
-2.507230e-02 4.444148e-06 2.506359e-02 2.508101e-02 
+2.531669e-02 4.291579e-06 2.530828e-02 2.532510e-02 
 attr(,"wrong.se")
-[1] 2.120256e-05
+[1] 1.193425e-05
 
 =======================
 Row: 40 
@@ -1923,30 +1801,30 @@ Race: White
 Sex: Female 
 Site: Leg (hip to toe) 
 Num_Breakpoints: 6 
-Joinpoint_Years: 1977, 1984, 1994, 1997, 2006, 2019 
+Joinpoint_Years: 1980, 1983, 1992, 1999, 2006, 2019 
 Segment_Years:
      [,1] [,2]
-[1,] 1975 1977
-[2,] 1977 1984
-[3,] 1984 1994
-[4,] 1994 1997
-[5,] 1997 2006
+[1,] 1975 1980
+[2,] 1980 1983
+[3,] 1983 1992
+[4,] 1992 1999
+[5,] 1999 2006
 [6,] 2006 2019
 [7,] 2019 2022
 APC:
            Est. CI(95%).l CI(95%).u
-slope1  1.93720   1.90730   1.96700
-slope2  5.13790   5.12880   5.14710
-slope3  0.82134   0.81781   0.82488
-slope4  6.19260   6.17090   6.21440
-slope5  2.82750   2.82410   2.83090
-slope6  0.89265   0.89115   0.89414
-slope7 -2.18020  -2.19530  -2.16510
+slope1  2.69300   2.67990   2.70610
+slope2  6.88620   6.86920   6.90310
+slope3  0.73608   0.73192   0.74023
+slope4  3.91590   3.91030   3.92150
+slope5  2.61730   2.61250   2.62200
+slope6  0.86945   0.86779   0.87112
+slope7 -1.95230  -1.96740  -1.93710
 AAPC:
         Est.       St.Err    CI(95%).l    CI(95%).u 
-1.970128e-02 4.674599e-06 1.969212e-02 1.971045e-02 
+1.966451e-02 4.093805e-06 1.965649e-02 1.967253e-02 
 attr(,"wrong.se")
-[1] 1.349182e-05</code></pre>
+[1] 1.241586e-05</code></pre>
 </div>
 </div>
 </section>

@@ -1,26 +1,23 @@
 ---
-title: "Linear Log Regression Analysis"
+title: "Linear-Log Regression Analysis"
 author: "Lynle Hayes; Refactored by Andre Gala-Garza"
 format: html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
+library(tidyverse) # includes ggplot2
+library(dplyr)
 ```
 
 # Learning Objectives
--	Determine the appropriate ICD codes, histologic codes, and any relevant subtypes of a cancer.
--	Utilize SEER*Stat to access data from the SEER cancer registry.
--	Visualize cancer incidence and trends by sex, race, and cancer subtype.
+* Determine the appropriate ICD codes, histologic codes, and any relevant subtypes of a cancer.
+*	Utilize SEER*Stat to access data from the SEER cancer registry.
+* Visualize cancer incidence and trends by sex, race, and cancer subtype.
 
 # Code
 
 ```{r}
-library(tidyverse)
-library(ggplot2)
-library(dplyr)
-
 data <- read.csv("Melanoma.csv",header=TRUE)
 colnames(data) <- c("Race","Sex","Subsite","Year","Rate","Cases","Pop")
 

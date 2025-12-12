@@ -6,7 +6,10 @@ format: html
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#install.packages("tidyverse")
+library(tidyverse)
+library(segmented)
+library(furrr)
+library(future)
 ```
 
 
@@ -18,10 +21,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # Code
 
 ```{r}
-library(tidyverse)
-library(ggplot2)
-library(segmented)
-
 set.seed(0)
 
 # Load and clean data
@@ -40,7 +39,7 @@ data_melanoma <- data|> filter(Year != "1975-2022")
 
 # Select a data subset (overall)
 data_melanoma_overall = data_melanoma |> 
-  filter(Race == c("All races") &
+  filter(Race == "All races" &
            Sex == "Male and female" &
            Site == "All sites")
 
@@ -65,13 +64,9 @@ points(data_melanoma_overall$Year, data_melanoma_overall$Rate)
 # So, let's calculate by hand.
 summary(out.glm.best)
 
-# The relevant break points at 1984, 1995, and 2005
 slope(out.glm.best, APC=TRUE)
 
-# We see that the relevant beta coefficients are -0.0344310 (for 1985-1995: 
-# 10 years) and -0.0202100 (for 1995 to 1999: 5 years)
 AAPC_est = (exp((5*0.003 + 5*0.003)/10) - 1)
-# AAPC on this 15 year period is -2.38% per year
 ```
 
 ```{r}
@@ -88,9 +83,6 @@ joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 5) {
 
   # Select the best fit number of joinpoints
   out.glm.best <- selgmented(out.glm, seg.Z = ~ Year, Kmax = kmax, type = "bic", msg = FALSE)
-  if (is.null(out.glm.best) || is.null(out.glm.best$psi) || nrow(out.glm.best$psi) == 0) {
-    return(NULL)
-  }
   
   # Identify joinpoints
   num_breakpoints <- nrow(out.glm.best$psi)
@@ -129,50 +121,35 @@ joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 5) {
 ```{r}
 races <- c("All races", "Black", "White")
 sexes <- c("Male and female", "Male", "Female")
-sites <- c("All sites", "Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)")
+sites <- c("All sites", "Head and Neck", "Trunk",
+           "Arm (shoulder to finger)", "Leg (hip to toe)")
 
-combos_race <- c()
-combos_sex <- c()
-combos_site <- c()
-model_list <- list()
+grid <- expand_grid(Race = races, Sex = sexes, Site = sites)
 
-num_breakpoints_list <- c()
-joinpoint_years_list <- list()
-segment_years_list <- list()
-apc_list <- list()
-aapc_list <- list()
+future::plan(multisession)
 
-for (race in races) {
-  for (sex in sexes) {
-    for (site in sites) {
-      model_obj <- joinpoint_model(data_melanoma, race, sex, site)
-      if (is.null(model_obj)) next
-      combos_race <- c(combos_race, race)
-      combos_sex <- c(combos_sex, sex)
-      combos_site <- c(combos_site, site)
-      model_list[[length(model_list) + 1]] <- model_obj
-      
-      num_breakpoints_list <- c(num_breakpoints_list, model_obj$num_breakpoints)
-      joinpoint_years_list[[length(joinpoint_years_list) + 1]] <- model_obj$joinpoint_years
-      segment_years_list[[length(segment_years_list) + 1]] <- model_obj$segment_years
-      apc_list[[length(apc_list) + 1]] <- model_obj$apc
-      aapc_list[[length(aapc_list) + 1]] <- model_obj$aapc
-    }
-  }
-}
+models <- grid |>
+  mutate(
+    Model = future_pmap(
+      list(Race, Sex, Site),
+      function(race, sex, site) {
+        tryCatch(
+          joinpoint_model(data_melanoma, race, sex, site),
+          error = function(e) NULL
+        )
+      },
+      .options = furrr_options(seed = TRUE)
+    )
+  ) |>
+  filter(!map_lgl(Model, is.null)) |>
+  mutate(
+    Num_Breakpoints = map_int(Model, "num_breakpoints"),
+    Joinpoint_Years = map(Model, "joinpoint_years"),
+    Segment_Years = map(Model, "segment_years"),
+    APC = map(Model, "apc"),
+    AAPC = map(Model, "aapc")
+  )
 
-models <- data.frame(
-  Race = combos_race,
-  Sex = combos_sex,
-  Site = combos_site,
-  Num_Breakpoints = num_breakpoints_list,
-  Joinpoint_Years = I(joinpoint_years_list),
-  Segment_Years = I(segment_years_list),
-  APC = I(apc_list),
-  AAPC = I(aapc_list),
-  Model = I(model_list),
-  stringsAsFactors = FALSE
-)
 ```
 
 ```{r}
@@ -195,26 +172,46 @@ get_model <- function(models, race, sex, site) {
 ```{r}
 plot_joinpoint_set <- function(model_objs, labels, cols,
                                main, ylab = "Rate per 100,000") {
-  df_list <- list()
-  for (i in seq_along(model_objs)) {
-    m <- model_objs[[i]]
-    d <- m$data
-
+  # Helper to plot multiple data frames
+  make_series_df <- function(model_obj, label) {
+    d <- model_obj$data
     year_grid <- seq(min(d$Year), max(d$Year), by = 1)
-    pred_rate <- exp(predict(m$fit, newdata = data.frame(Year = year_grid),
-                             type = "link")) * 100000
+    fitted_rate <- predict(model_obj$fit,
+                           newdata = data.frame(Year = year_grid),
+                           type = "link") |> exp() * 100000
 
-    df_list[[i]] <- rbind(
-      data.frame(Year = d$Year, Rate = d$Rate, Series = labels[i], Type = "Observed"),
-      data.frame(Year = year_grid, Rate = pred_rate, Series = labels[i], Type = "Fitted")
+    observed_df <- data.frame(
+      Year = d$Year,
+      Rate = d$Rate,
+      Series = label,
+      Type = "Observed"
     )
-  }
-  plot_df <- do.call(rbind, df_list)
+    fitted_df <- data.frame(
+      Year = year_grid,
+      Rate = fitted_rate,
+      Series = label,
+      Type = "Fitted"
+    )
 
-  ylim_max <- max(plot_df$Rate[plot_df$Type == "Fitted"], na.rm = TRUE)
+    bind_rows(observed_df, fitted_df)
+  }
+
+  # Perform the plotting
+  plot_df <- bind_rows(
+    Map(make_series_df, model_objs, labels)
+  )
+
+  ylim_max <- plot_df |>
+    filter(Type == "Fitted") |>
+    summarise(max_rate = max(Rate, na.rm = TRUE)) |>
+    pull(max_rate)
 
   ggplot(plot_df, aes(x = Year, y = Rate, group = Series)) +
-    geom_line(data = subset(plot_df, Type == "Fitted"), aes(color = Series), linewidth = 1) +
+    geom_line(
+      data = filter(plot_df, Type == "Fitted"),
+      aes(color = Series),
+      linewidth = 1
+    ) +
     scale_color_manual(values = cols, breaks = labels) +
     coord_cartesian(ylim = c(0, ylim_max)) +
     labs(title = main, y = ylab, color = NULL) +
@@ -225,8 +222,8 @@ plot_joinpoint_set <- function(model_objs, labels, cols,
 ```{r}
 # Stratified by Sex
 m_overall <- get_model(models, "All races", "Male and female", "All sites")
-m_male    <- get_model(models, "All races", "Male", "All sites")
-m_female  <- get_model(models, "All races", "Female", "All sites")
+m_male <- get_model(models, "All races", "Male", "All sites")
+m_female <- get_model(models, "All races", "Female", "All sites")
 
 plot_joinpoint_set(
   list(m_female, m_male, m_overall),
@@ -252,9 +249,9 @@ plot_joinpoint_set(
 ```{r}
 # Stratified by anatomical location (Site)
 m_headneck <- get_model(models, "All races", "Male and female", "Head and Neck")
-m_trunk    <- get_model(models, "All races", "Male and female", "Trunk")
-m_arm      <- get_model(models, "All races", "Male and female", "Arm (shoulder to finger)")
-m_leg      <- get_model(models, "All races", "Male and female", "Leg (hip to toe)")
+m_trunk <- get_model(models, "All races", "Male and female", "Trunk")
+m_arm <- get_model(models, "All races", "Male and female", "Arm (shoulder to finger)")
+m_leg <- get_model(models, "All races", "Male and female", "Leg (hip to toe)")
 
 plot_joinpoint_set(
   list(m_headneck, m_trunk, m_arm, m_leg, m_overall),
@@ -266,10 +263,10 @@ plot_joinpoint_set(
 
 ```{r}
 # Stratified by Race (Black/White) and Sex (Male/Female)
-m_black_male    <- get_model(models, "Black", "Male", "All sites")
-m_white_male    <- get_model(models, "White", "Male", "All sites")
-m_black_female  <- get_model(models, "Black", "Female", "All sites")
-m_white_female  <- get_model(models, "White", "Female", "All sites")
+m_black_male <- get_model(models, "Black", "Male", "All sites")
+m_white_male <- get_model(models, "White", "Male", "All sites")
+m_black_female <- get_model(models, "Black", "Female", "All sites")
+m_white_female <- get_model(models, "White", "Female", "All sites")
 
 plot_joinpoint_set(
   list(m_black_male, m_white_male, m_black_female, m_white_female, m_overall),
@@ -282,9 +279,9 @@ plot_joinpoint_set(
 ```{r}
 # Stratified by Sex (Male) and Site
 m_male_headneck <- get_model(models, "All races", "Male", "Head and Neck")
-m_male_trunk    <- get_model(models, "All races", "Male", "Trunk")
-m_male_arm      <- get_model(models, "All races", "Male", "Arm (shoulder to finger)")
-m_male_leg      <- get_model(models, "All races", "Male", "Leg (hip to toe)")
+m_male_trunk <- get_model(models, "All races", "Male", "Trunk")
+m_male_arm <- get_model(models, "All races", "Male", "Arm (shoulder to finger)")
+m_male_leg <- get_model(models, "All races", "Male", "Leg (hip to toe)")
 
 plot_joinpoint_set(
   list(m_male_headneck, m_male_trunk, m_male_arm, m_male_leg, m_male),
@@ -297,9 +294,9 @@ plot_joinpoint_set(
 ```{r}
 # Stratified by Sex (Female) and Site
 m_female_headneck <- get_model(models, "All races", "Female", "Head and Neck")
-m_female_trunk    <- get_model(models, "All races", "Female", "Trunk")
-m_female_arm      <- get_model(models, "All races", "Female", "Arm (shoulder to finger)")
-m_female_leg      <- get_model(models, "All races", "Female", "Leg (hip to toe)")
+m_female_trunk <- get_model(models, "All races", "Female", "Trunk")
+m_female_arm <- get_model(models, "All races", "Female", "Arm (shoulder to finger)")
+m_female_leg <- get_model(models, "All races", "Female", "Leg (hip to toe)")
 
 plot_joinpoint_set(
   list(m_female_headneck, m_female_trunk, m_female_arm, m_female_leg, m_female),
@@ -312,9 +309,9 @@ plot_joinpoint_set(
 ```{r}
 # Stratified by Race (White) and Site
 m_white_headneck <- get_model(models, "White", "Male and female", "Head and Neck")
-m_white_trunk    <- get_model(models, "White", "Male and female", "Trunk")
-m_white_arm      <- get_model(models, "White", "Male and female", "Arm (shoulder to finger)")
-m_white_leg      <- get_model(models, "White", "Male and female", "Leg (hip to toe)")
+m_white_trunk <- get_model(models, "White", "Male and female", "Trunk")
+m_white_arm <- get_model(models, "White", "Male and female", "Arm (shoulder to finger)")
+m_white_leg <- get_model(models, "White", "Male and female", "Leg (hip to toe)")
 
 plot_joinpoint_set(
   list(m_white_headneck, m_white_trunk, m_white_arm, m_white_leg,
@@ -328,9 +325,9 @@ plot_joinpoint_set(
 ```{r}
 # Stratified by Race (Black) and Site
 m_black_headneck <- get_model(models, "Black", "Male and female", "Head and Neck")
-m_black_trunk    <- get_model(models, "Black", "Male and female", "Trunk")
-m_black_arm      <- get_model(models, "Black", "Male and female", "Arm (shoulder to finger)")
-m_black_leg      <- get_model(models, "Black", "Male and female", "Leg (hip to toe)")
+m_black_trunk <- get_model(models, "Black", "Male and female", "Trunk")
+m_black_arm <- get_model(models, "Black", "Male and female", "Arm (shoulder to finger)")
+m_black_leg <- get_model(models, "Black", "Male and female", "Leg (hip to toe)")
 
 plot_joinpoint_set(
   list(m_black_headneck, m_black_trunk, m_black_arm, m_black_leg,

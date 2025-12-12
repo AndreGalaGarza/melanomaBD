@@ -1,6 +1,6 @@
 ---
-title: "Unit 7 Lab: Cancer Survival"
-author: "Lynle Hayes"
+title: "Survival Regression Analysis"
+author: "Lynle Hayes; Refactored by Andre Gala-Garza"
 format: html
 editor: 
   markdown: 
@@ -18,230 +18,134 @@ library(viridis)
 library(dplyr)
 ```
 
-Every cancer has different patterns of survival over time and by covariates like cancer stage, age, sex, race and cancer subtype.
-Cox proportional hazards models are one classic approach to modeling cancer survival, but, because cancer patients tend to be older and have comorbid conditions, we also need to take competing risks into account.
+# Learning Objectives
+* Visualize cumulative incidence of cancer deaths and other deaths in cancer patients.
+* Use Cox proportional hazards models to compare mortality rates among different demographic groups.
+* Calculate, visualize and interpret time-varying hazard ratios.
 
-In this lab, you will continue to develop an understanding of the cancer you chose in Lab 4, this time focused on survival.
-
-**Learning objectives:** - Visualize cumulative incidence of cancer deaths and other deaths in cancer patients.
-- Use Cox proportional hazards models to compare mortality rates among different demographic groups.
-- Calculate, visualize and interpret time-varying hazard ratios.
-
-**Task:** Follow the steps outlined below, submit a PDF of our output (render as HTML and print the HTML to PDF) that answers the questions in bold below, including any supporting plots.
-As with any lab, you may work in groups, but everyone should submit their own response and code, in their own words.
-
-**Criteria:** This assignment will be graded on the correctness and completeness of the answers to the questions and on whether the plots are publication-ready, with easy-to-read text.
-Use reasonable significant digits (2-3 depending on the scale) when reporting numbers.
-
-# Steps
-
-## 1 Download survival data from SEERStat
-
-Using SEERStat, open a Case Listing Session.
-
--   Data. Select the most recent SEER 17 data.
--   Selection. Subset the sample based on the following criteria.
-    -   `Site and Morphology.Primary Site – labeled`. Select only the sites for your cancer of interest, if applicable.
-    -   `Site and Morphology.Histologic Type ICD-O-3`. Select only the codes relevant to your cancer, if applicable.
-    -   `Cause of Death (COD) and Follow-up.SEER cause-specific death classification`. Select only “Alive or dead of other cause” and “Dead (attributable to this cancer dx).”
-    -   `Cause of Death (COD) and Follow-up.Survival months`. Select **not** equal to 0 or unknown.
-    -   `Age at Diagnosis.Age recode with <1 year olds`. Subset to only ages 30 and above, unless you are working with a childhood cancer, in which case subset appropriately.
-    -   `Race, Sex, Year Dx.Year of diagnosis`. Subset to 2004 and later (because our staging variable of interest is only available for those years).
--   Table. Include the following columns in this order.
-    -   Age recode with \<1 year olds
-    -   Race and origin recode (NHW, NHB, NHAIAN, NHAPI, Hispanic),
-    -   Sex
-    -   Year of diagnosis
-    -   Your subtype variable
-    -   Combined Summary Stage with Expanded Regional Codes (2004+)
-    -   SEER cause-specific death classification
-    -   SEER other cause of death classification
-    -   Survival months.
--   Run the session and save with .csv defaults.
-
-In each of the following sections, modify the code, which analyzes head and neck cancer survival, for your cancer.
-
-## 2 Importing and managing data
-
+# 1. Import and manage data
 ```{r}
-#As you'll see, I wrote this before I learned tidyverse.
+data <- read.csv("melanoma_survival.csv", header=TRUE)
 
-data_melanoma=read.csv("melanoma_survival.csv",header=TRUE)
-data=read.csv("melanoma_survival.csv",header=TRUE)
-
-##Age
+# Age
 table(data$Age.recode.with..1.year.olds.and.90.)
-data$age=array(NA,nrow(data))
-data[data[,1]=="15-19 years",]$age = "<50"
-data[data[,1]=="20-24 years",]$age = "<50"
-data[data[,1]=="25-29 years",]$age = "<50"
-data[data[,1]=="30-34 years",]$age = "<50"
-data[data[,1]=="35-39 years",]$age = "<50"
-data[data[,1]=="40-44 years",]$age = "<50"
-data[data[,1]=="45-49 years",]$age = "<50"
-data[data[,1]=="50-54 years",]$age = "50-59"
-data[data[,1]=="55-59 years",]$age = "50-59"
-data[data[,1]=="60-64 years",]$age = "60-69"
-data[data[,1]=="65-69 years",]$age = "60-69"
-data[data[,1]=="70-74 years",]$age = "70+"
-data[data[,1]=="75-79 years",]$age = "70+"
-data[data[,1]=="80-84 years",]$age = "70+"
-data[data[,1]=="85-89 years",]$age = "70+"
-data[data[,1]=="90+ years",]$age = "70+"
-data$age=factor(data$age,levels=c("70+","<50","50-59","60-69"))
 
-##Race
-colnames(data)[2]="race"
-data$race=factor(data$race)
-data$race=relevel(data$race,ref="Non-Hispanic White")
+data$age <- dplyr::case_when(
+  data[[1]] %in% c("15-19 years","20-24 years","25-29 years","30-34 years",
+                   "35-39 years","40-44 years","45-49 years") ~ "<50",
+  data[[1]] %in% c("50-54 years","55-59 years") ~ "50-59",
+  data[[1]] %in% c("60-64 years","65-69 years") ~ "60-69",
+  data[[1]] %in% c("70-74 years","75-79 years","80-84 years","85-89 years","90+ years") ~ "70+",
+  TRUE ~ NA_character_
+)
+data$age <- factor(data$age, levels = c("70+","<50","50-59","60-69"))
 
-##Sex
-colnames(data)[3]="sex"
-data$sex=factor(data$sex,levels=c("Female","Male"))
+# Race
+colnames(data)[2] <- "race"
+data$race <- factor(data$race)
+data$race <- relevel(data$race, ref = "Non-Hispanic White")
 
-## Create Head_and_Neck classification and update subsite factor levels
+# Sex
+colnames(data)[3] <- "sex"
+data$sex <- factor(data$sex, levels = c("Female","Male"))
 
-
+# Create Head_and_Neck classification and update subsite factor levels
 # Rename column 5 to "subsite"
 colnames(data)[5] = "subsite"
 
 # Recode subsite into broader categories
-data = data %>%
+data <- data %>%
   mutate(
     subsite = case_when(
-      subsite %in% c("C44.1-Eyelid", "C44.2-External ear", 
-                     "C44.3-Skin other/unspec parts of face", 
+      subsite %in% c("C44.1-Eyelid", "C44.2-External ear",
+                     "C44.3-Skin other/unspec parts of face",
                      "C44.4-Skin of scalp and neck") ~ "Head and Neck",
       subsite %in% c("C44.5-Trunk") ~ "Trunk",
-      subsite %in% c("C44.6-Upper limb", "C44.7-Lower limb") ~ "Arm",  # Adjust if needed
-      subsite %in% c("C44.7-Lower limb") ~ "Leg",                     # Adjust if needed
+      subsite %in% c("C44.6-Upper limb") ~ "Arm",
+      subsite %in% c("C44.7-Lower limb") ~ "Leg",
       TRUE ~ subsite
     ),
     subsite = factor(subsite, levels = c("Head and Neck", "Trunk", "Arm", "Leg"))
-  )
+)
 
+# Year of diagnosis
+data$yod <- ifelse(data[[4]] < 2010, "2004-2009", "2010-2022")
+data$yod <- factor(data$yod, levels = c("2004-2009","2010-2022"))
 
-##Year of diagnosis
-data$yod=array(NA,nrow(data))
-data[data[,4]<2010,]$yod = "2004-2009"
-data[data[,4]>=2010,]$yod = "2010-2022"
-data$yod=factor(data$yod,levels=c("2004-2009","2010-2022"))
-
-
-
-##Subtype
-#Create a subtype variable appropriate to your cancer. For head and neck, we 
-#used Primary Site, but for you cancer other variables (e.g., histology) may 
-#be relevant. Follow what you did for Labs 4-6.
-#data$subsite=array(NA,nrow(data))
-#data$subsite=factor(data$subsite,levels=c("Head and Neck","Trunk","Arm", "Leg"))
-
-
-##Stage
+# Stage
 colnames(data)[6]="stage"
-#Note, cancer stage classification may depend somewhat on cancer. Moreover, the
-#example here uses an older stage variable. You will need to modify the next
-#lines of code appropriately for your cancer. Start with 
 table(data$stage)
-#to see what stages are included in sufficient numbers to be considered separately
-#and which categories could be sensibly combined.
-data$stage[data$stage=="Blank(s)"]="Unstaged"
-data$stage[data$stage=="In situ"]="Unstaged"
-data$stage[data$stage=="Unknown/unstaged/unspecified/DCO"]="Unstaged"
-data$stage[data$stage=="Regional by both direct extension and lymph node involvement"]="Regional"
-data$stage[data$stage=="Regional by direct extension only"]="Regional"
-data$stage[data$stage=="Regional lymph nodes involved only"]="Regional"
-data$stage[data$stage=="Distant site(s)/node(s) involved"]="Distant"
-data$stage[data$stage=="Localized only"]="Localized"
-data$stage=factor(data$stage,levels=c("Localized","Regional","Distant","Unstaged"))
 
-##Survival time
-colnames(data)[9]="time"
-data$time=as.numeric(data$time)
-data[,9]=data[,9]/12 #convert months to years
+data$stage <- dplyr::case_when(
+  data$stage %in% c("Blank(s)", "In situ", "Unknown/unstaged/unspecified/DCO") ~ "Unstaged",
+  data$stage %in% c("Regional by both direct extension and lymph node involvement",
+                    "Regional by direct extension only",
+                    "Regional lymph nodes involved only") ~ "Regional",
+  data$stage == "Distant site(s)/node(s) involved" ~ "Distant",
+  data$stage == "Localized only" ~ "Localized",
+  TRUE ~ data$stage
+)
+data$stage <- factor(data$stage, levels = c("Localized","Regional","Distant","Unstaged"))
 
-##Survival event
-data$event=array(NA,nrow(data))
-data[data[,7]=="Dead (attributable to this cancer dx)",]$event = "Cancer death"
-data[data[,8]=="Dead (attributable to causes other than this cancer dx)",]$event = "Other death"
-data[data[,7]=="Alive or dead of other cause" & data[,8]=="Alive or dead due to cancer" ,]$event = "Alive"
-data$event=factor(data$event,levels=c("Alive","Cancer death","Other death"))
+# Survival time
+colnames(data)[9] <- "time"
+data$time <- as.numeric(data$time)
+data$time <- data$time / 12  # convert months to years
 
-
+# Survival event
+data$event <- dplyr::case_when(
+  data[[7]] == "Dead (attributable to this cancer dx)" ~ "Cancer death",
+  data[[8]] == "Dead (attributable to causes other than this cancer dx)" ~ "Other death",
+  data[[7]] == "Alive or dead of other cause" & data[[8]] == "Alive or dead due to cancer" ~ "Alive",
+  TRUE ~ NA_character_
+)
 ```
 
-## 3 Plotting cumulative incidence using the survival package
-
+# 2. Plot cumulative incidence using the survival package
 ```{r}
-#Create a multistate (competing risks) survival object with no covariates (~1)
-sf_HN_MS=survfit(Surv(time=data$time,event=data$event,type="mstate")~1)
+# Create a multistate (competing risks) survival object with no covariates (~1)
+sf_HN_MS <- survfit(Surv(time=data$time,event=data$event,type="mstate")~1)
+DATA <- matrix(NA,nrow=3*length(sf_HN_MS$time),ncol=3)
 
-DATA=matrix(NA,nrow=3*length(sf_HN_MS$time),ncol=3)
-#Time for each of "Cancer death", "other death", and "alive"
-DATA[,1]=rep(sf_HN_MS$time,3)
-#Probabilities are cumulative. These are where "Cancer death", "other death", and "alive" each start
-DATA[,2]=c(rep(0,length(sf_HN_MS$time)),sf_HN_MS$pstate[,2],sf_HN_MS$pstate[,2]+sf_HN_MS$pstate[,3])
-#Probabilities are cumulative. These are where "Cancer death", "other death", and "alive" each end
-DATA[,3]=c(sf_HN_MS$pstate[,2],sf_HN_MS$pstate[,2]+sf_HN_MS$pstate[,3],rep(1,length(sf_HN_MS$time)))
-DATA=as.data.frame(DATA)
-colnames(DATA)=c("x","ymin","ymax")
-DATA$state=c(rep("Cancer Death",length(sf_HN_MS$time)),rep("Other death",length(sf_HN_MS$time)),
+# Time for each of "Cancer death", "other death", and "alive"
+DATA[,1] <- rep(sf_HN_MS$time,3)
+
+# Probabilities are cumulative. These are where "Cancer death", "other death", and "alive" each start
+DATA[,2] <- c(rep(0,length(sf_HN_MS$time)),sf_HN_MS$pstate[,2],sf_HN_MS$pstate[,2]+sf_HN_MS$pstate[,3])
+
+# Probabilities are cumulative. These are where "Cancer death", "other death", and "alive" each end
+DATA[,3] <- c(sf_HN_MS$pstate[,2],sf_HN_MS$pstate[,2]+sf_HN_MS$pstate[,3],rep(1,length(sf_HN_MS$time)))
+DATA <- as.data.frame(DATA)
+
+colnames(DATA) <- c("x","ymin","ymax")
+DATA$state <- c(rep("Cancer Death",length(sf_HN_MS$time)),rep("Other death",length(sf_HN_MS$time)),
              rep("Alive",length(sf_HN_MS$time)))
-DATA$state=factor(DATA$state,levels=c("Cancer Death","Other death","Alive"))
+DATA$state <- factor(DATA$state,levels=c("Cancer Death","Other death","Alive"))
 
-p0 = ggplot(data=DATA,aes(x=x,y=ymin,ymin=ymin,ymax=ymax,fill=state))+
-  scale_fill_manual(values=c( "gray40","gray2","grey60"),guide_legend(title="Age at diagnosis"))+
-  geom_ribbon(aes(fill=state,linetype=NA),alpha=1,show.legend=FALSE)+
-  theme_bw(base_size = 8) + labs(x='Years since diagnosis', y='Fraction')+
-  theme(axis.title.y=element_text(vjust=1.5))+
+p0 <- ggplot(data = DATA, aes(x = x, y = ymin, ymin = ymin, ymax = ymax, fill = state)) +
+  scale_fill_manual(values=c("gray40", "gray2", "grey60"), guide_legend(title = "Age at diagnosis")) +
+  geom_ribbon(aes(fill = state,linetype = NA), alpha = 1, show.legend = FALSE) +
+  theme_bw(base_size = 8) + labs(x = 'Years since diagnosis', y = 'Fraction') +
+  theme(axis.title.y = element_text(vjust=1.5))+
   theme(legend.position.inside = c(0.3,0.8),legend.key = element_blank(),
-        legend.background=element_blank(),legend.text=element_text(size=7),
-        legend.key.height=unit(0.05,"inch"))+
+        legend.background = element_blank(), legend.text = element_text(size=7),
+        legend.key.height = unit(0.05,"inch")) +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.line.x = element_line(color = "black",linewidth=0.4),
-        axis.line.y = element_line(color = "black",linewidth=0.4))+
-  annotate("text",x=c(5,9,11),y=c(0.75,0.05,0.2),label=c("Alive","Died from cancer","Died from other causes"),color="White",size=2.5)+
-  scale_x_continuous(limits=c(0,15),expand=(c(0.01,0.01)),breaks=c(0,5,10,15,20))+ 
-  scale_y_continuous(limits=c(0,1),expand=c(0.005,0.005))#+
-p0
+        axis.line.x = element_line(color = "black", linewidth = 0.4),
+        axis.line.y = element_line(color = "black", linewidth = 0.4))+
+  annotate("text", x = c(5, 9, 11), y = c(0.75, 0.05, 0.2), label = c("Alive", "Died from cancer",
+                                                                      "Died from other causes"),
+                                                            color = "White", size = 2.5) +
+  scale_x_continuous(limits = c(0, 15), expand = (c(0.01, 0.01)), breaks = c(0, 5, 10, 15, 20)) + 
+  scale_y_continuous(limits = c(0, 1), expand = c(0.005,0.005))
 
+p0
 ```
 
-**Q1**: Plot fraction of the population that has died because of their cancer, died because of other reasons, and is alive over 15 years.
-Use the data extracted from the `survfit` object to answer the following questions.
-You will need to use [conditional probability rules](https://en.wikipedia.org/wiki/Conditional_probability) for some of these questions.
-- What fraction of people are still alive at 5 years (overall survival) and what fractions have died from their cancers and other causes?
-- What fraction of the people who died of their cancer within 5 years died in the first year?
-- What is the probability of being alive at 5 years if you survive one year?
-What is the probability of surviving 15 years if you survive 5 years?
-- How is the difference in fraction of the population that has died of their cancer 5 years after diagnosis and by 15 years affected by the fraction of people that have died of other causes?
-(Unlike the previous questions, this is not a calculation -- just discuss the extent to which more people would have died of their cancer had they not died of other causes).
-
-> **Answer:** The fraction of people that still alive at 5 years (overall survival) is 1.0000000 - 0.199265884 = .800734116 or 80.1% Alive.
-> The fraction that died from their cancers 0.076671083 - 0 = 0.076671083 or 7.7% Cancer Death.
-> The fraction that died from other causes 0.199265884 - 0.076671083 = .12594801 or 12.6 % Other Death.
-> Among the people with melanomia after the first 5 years post diagosis the 80.1% were still alive, 7.7% died due to the cancer, 12.6% died of causes other than cancer.
-
->The fraction of the people who died of their cancer within 5 years died in the first year is 0.021372219/0.076671083 = .2787520166 or 27.9%.
->Among those that died of melanoma within the first five years after diagonsis, 27.9% of them died within the first year.
-
->The probability of being alive at 5 years if you survive one year is P(Alive at 5 years \| Alive at 1 years) = 0.800734116/(1-0.047521254) = .800734116/.952478746 = 0.8406844975 probalility or an 84.1%.
-
->The probability of surviving 15 years if you survive 5 years is P(Alive at 15 years \| Alive at 5 years) = (1 - 0.4283122)/0.800734116 = 0.5716878/0.800734116 = 0.7139545931 probablity or 71.4%
-
->The difference in fraction of the population that has died of their cancer 5 years after diagnosis and by 15 years affects the fraction of people that have died of other causes due to the fact that death from cancer and death from other causes are competing risks.
-Once someone dies from another cause, they can't die from their cancer anymore (only one death per person).
-At 5 years post diagnosis, relatively few people have died in our population 20.3%, 12.6% of other causes and 7.7% are deaths from melanoma, these are only a 4.9% difference.
-At 15 years post diagnosis there is a much larger portion of the population has died from other causes this directly effects the number of people still at risk of dying from cancer by reducing the chance people will die of their cancer.
-Therefore the increase in cancer deaths between 5 and 15 years is smaller than it would have been if no one had died from other cause, more deaths from other causes is a limiting factor as to how many cancer deaths can occur over time.
-You died in a car accident prevents you from dying from cancer.
-A note to have here that the same applies to the opposite.
-If you die of cancer you it limits the death from other causes that can occur, melanomia is just a low probability of death cancer (or high survial rate) so other causes of death dominate the cause of death.
-
-## 4 Plotting cumulative incidence by covariate
+## 3. Plotting cumulative incidence by covariate
 
 Here, we create a `survift` object with cumulative incidence stratified by the levels of our variables of interest.
 In order to extract information for plotting from the `survfit` objects, we need to know the order of the levels and how many rows are associated with each level.
@@ -249,112 +153,114 @@ In order to extract information for plotting from the `survfit` objects, we need
 Let's start by looking at sex and race & ethnicity.
 
 ```{r}
-#Cumulative incidence of cancer death by sex
-sf_sex=survfit(Surv(time=data$time,event=data$event,type="mstate")~data$sex)
-#Cumulative incidence of cancer death by race and ethnicity
-sf_race_eth=survfit(Surv(time=data$time,event=data$event,type="mstate")~data$race)
+data$time <- as.numeric(as.character(data$time))
 
-#Cumulative incidene of cancer death by subsite
-sf_subsite=survfit(Surv(time=data$time,event=data$event,type="mstate")~data$subsite)
+# Cumulative incidence of cancer death by sex
+sf_sex <- survfit(Surv(time=data$time,event=data$event,type="mstate")~data$sex)
 
-#Cumulative incidene of cancer death by age
-sf_age=survfit(Surv(time=data$time,event=data$event,type="mstate")~data$age)
+# Cumulative incidence of cancer death by race and ethnicity
+sf_race_eth <- survfit(Surv(time=data$time,event=data$event,type="mstate")~data$race)
 
-#Check the strata of each model
+# Cumulative incidence of cancer death by subsite
+sf_subsite <- survfit(Surv(time=data$time,event=data$event,type="mstate")~data$subsite)
+
+# Cumulative incidence of cancer death by age
+sf_age <- survfit(Surv(time=data$time,event=data$event,type="mstate")~data$age)
+
+# Check the strata of each model
 sf_sex$strata
 sf_race_eth$strata
 sf_subsite$strata
 sf_age$strata
 ```
 
-In the example data most groups have information across all possible survival months, but that isn't true for small subgroups (in the example data, Non-Hispanic American Indian/Alaskan Native).
-We need to be careful about extracting the right number of
+In the example data, most groups have information across all possible survival months, but that isn't true for small subgroups (in the example data, Non-Hispanic American Indian/Alaskan Native).
 
 ```{r}
-#Here is code to plot cumulative incidence of cancer death by sex
+# Plot cumulative incidence of cancer death by sex
+# For ease of plotting for other covariates, use generic plot code after setting
+df_sex <- sf_sex
+mycolors <- magma
 
-#For ease of plotting for other covariates, use generic plot code after setting
-df_sex=sf_sex
-#Can change your color palette
-mycolors <- magma #Look at Viridis Color Palettes in ?viridis for more options
-
-#Create a data matrix with the correct number of rows. A 0 for each group plus the sum of the number of rows for each subgroup
-DATA_ci_sex=matrix(NA,nrow=(length(df_sex$strata)+sum(df_sex$strata)),ncol=4)
-#x
-DATA_ci_sex[,1]=c(0,df_sex$time[1:df_sex$strata[1]],
+# Create a data matrix with the correct number of rows:
+# A 0 for each group plus the sum of the number of rows for each subgroup
+DATA_ci_sex <- matrix(NA,nrow=(length(df_sex$strata)+sum(df_sex$strata)),ncol=4)
+# x
+DATA_ci_sex[,1] <- c(0,df_sex$time[1:df_sex$strata[1]],
            0,df_sex$time[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2]))])
-#y
-DATA_ci_sex[,2]=c(0,df_sex$pstate[1:df_sex$strata[1],2],
+# y
+DATA_ci_sex[,2] <- c(0,df_sex$pstate[1:df_sex$strata[1],2],
            0,df_sex$pstate[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
-#95C% CI low
-DATA_ci_sex[,3]=c(0,df_sex$lower[1:df_sex$strata[1],2],
+# 95% CI (lower bound)
+DATA_ci_sex[,3] <- c(0,df_sex$lower[1:df_sex$strata[1],2],
            0,df_sex$lower[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
-#%95 CI high
-DATA_ci_sex[,4]=c(0,df_sex$upper[1:df_sex$strata[1],2],
+# 95% CI (upper bound)
+DATA_ci_sex[,4] <- c(0,df_sex$upper[1:df_sex$strata[1],2],
            0,df_sex$upper[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
-DATA_ci_sex=as.data.frame(DATA_ci_sex)
-colnames(DATA_ci_sex)=c("x","y","ymin","ymax")
-breaks=which(c(DATA_ci_sex$x,0)==0)[-1]
-DATA_ci_sex$sex=c(rep("Female",df_sex$strata[1]+1),rep("Male",df_sex$strata[2]+1))
-DATA_ci_sex$sex=factor(DATA_ci_sex$sex,levels=levels(data$sex))
+DATA_ci_sex <- as.data.frame(DATA_ci_sex)
+colnames(DATA_ci_sex) <- c("x","y","ymin","ymax")
+breaks <- which(c(DATA_ci_sex$x,0)==0)[-1]
+DATA_ci_sex$sex <- c(rep("Female",df_sex$strata[1]+1),rep("Male",df_sex$strata[2]+1))
+DATA_ci_sex$sex <- factor(DATA_ci_sex$sex,levels=levels(data$sex))
 
-
-plot_sex = ggplot(data=DATA_ci_sex,aes(x=x,y=y,ymin=ymin,ymax=ymax,color=sex))+
-  scale_color_manual(values=mycolors(3)[-3],name ="Sex")+
-  geom_ribbon(aes(fill=sex,linetype=NA),alpha=0.25,show.legend=FALSE)+
-  geom_line(linewidth=0.75)+
-  scale_fill_manual(guide="none",values=mycolors(3)[-3])+
-  theme_bw(base_size = 8) + labs(x='Years since diagnosis', y='Fraction dead from cancer')+
-  theme(axis.title.y=element_text(vjust=1.5))+
+# In this plot, we have two groups, so it gets busy to also show other
+# cause deaths. We drop them from this plot.
+plot_sex <- ggplot(data=DATA_ci_sex,aes(x = x, y = y, ymin = ymin, ymax = ymax, color = sex)) +
+  scale_color_manual(values=mycolors(3)[-3],name ="Sex") +
+  geom_ribbon(aes(fill = sex, linetype = NA), alpha = 0.25, show.legend=FALSE) +
+  geom_line(linewidth = 0.75) +
+  scale_fill_manual(guide = "none", values = mycolors(3)[-3]) +
+  theme_bw(base_size = 8) + labs(x = 'Years since diagnosis', y = 'Fraction dead from cancer') +
+  theme(axis.title.y = element_text(vjust=1.5)) +
   theme(legend.position = "inside",
-        legend.position.inside = c(0.2,0.7),legend.key = element_blank(),
-        legend.background=element_blank(),legend.text=element_text(size=7),
-        legend.key.height=unit(0.05,"inch"))+
+        legend.position.inside = c(0.2,0.7), legend.key = element_blank(),
+        legend.background = element_blank(), legend.text = element_text(size = 7),
+        legend.key.height = unit(0.05,"inch")) +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.line.x = element_line(color = "black",linewidth=0.4),
-        axis.line.y = element_line(color = "black",linewidth=0.4))+
-  scale_x_continuous(limits=c(0,5),expand=(c(0.01,0.01)))+ 
-  scale_y_continuous(limits=c(0,.1),expand=c(0.005,0.005))
+        axis.line.x = element_line(color = "black", linewidth = 0.4),
+        axis.line.y = element_line(color = "black", linewidth = 0.4)) +
+  scale_x_continuous(limits = c(0, 5), expand = (c(0.01, 0.01))) + 
+  scale_y_continuous(limits=c(0, 0.1), expand =c(0.005, 0.005))
+
 plot_sex
-#In this plot, we have two groups, so it gets busy to also show other
-#cause deaths. We drop them from this plot.
 ```
 
 ```{r}
-#Here is code to plot cumulative incidence of cancer death by race and ethnicity
-
-#For ease of plotting for other covariates, use generic plot code after setting
-df_re=sf_race_eth
-#Create a data matrix with the correct number of rows. A 0 for each group plus the sum of the number of rows for each subgroup. I'm going to drop "unknown" race.
+# Plot cumulative incidence of cancer death by race and ethnicity
+# For ease of plotting for other covariates, use generic plot code after setting
+df_re <- sf_race_eth
+# Create a data matrix with the correct number of rows:
+# A 0 for each group plus the sum of the number of rows for each subgroup.
+# Drop "unknown" race.
 DATA_ci_re=matrix(NA,nrow=(5+sum(df_re$strata[1:5])),ncol=4)
-#x
+# x
 DATA_ci_re[,1]=c(0,df_re$time[1:df_re$strata[1]],
            0,df_re$time[(1+df_re$strata[1]):(sum(df_re$strata[1:2]))],
            0,df_re$time[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3]))],
            0,df_re$time[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4]))],
            0,df_re$time[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5]))])
-#Do you see the pattern?
-#y
+# y
 DATA_ci_re[,2]=c(0,df_re$pstate[1:df_re$strata[1],2],
            0,df_re$pstate[(1+df_re$strata[1]):(sum(df_re$strata[1:2])),2],
            0,df_re$pstate[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
            0,df_re$pstate[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
            0,df_re$pstate[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
-#95C% CI low
+# 95% CI (lower bound)
 DATA_ci_re[,3]=c(0,df_re$lower[1:df_re$strata[1],2],
            0,df_re$lower[(1+df_re$strata[1]):(sum(df_re$strata[1:2])),2],
            0,df_re$lower[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
            0,df_re$lower[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
            0,df_re$lower[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
-#%95 CI high
+# 95% CI (upper bound)
 DATA_ci_re[,4]=c(0,df_re$upper[1:df_re$strata[1],2],
            0,df_re$upper[(1+df_re$strata[1]):(sum(df_re$strata[1:2])),2],
            0,df_re$upper[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
            0,df_re$upper[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
            0,df_re$upper[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
+
 DATA_ci_re=as.data.frame(DATA_ci_re)
 colnames(DATA_ci_re)=c("x","y","ymin","ymax")
 breaks=which(c(DATA_ci_re$x,0)==0)[-1]
@@ -365,7 +271,8 @@ DATA_ci_re$race_eth=c(rep("Non-Hispanic White",   1+df_re$strata[1]),
            rep("Non-Hispanic Black", 1+ df_re$strata[5]))
 DATA_ci_re$race_eth=factor(DATA_ci_re$race_eth)
 
-
+# In this plot, we have two groups, so it gets busy to also show other
+# cause deaths. We drop them from this plot.
 plot_race_eth = ggplot(data=DATA_ci_re,aes(x=x,y=y,ymin=ymin,ymax=ymax,color=race_eth))+
   scale_color_manual(values=mycolors(6)[-6],name ="Race and ethnicity")+
   geom_ribbon(aes(fill=race_eth,linetype=NA),alpha=0.25,show.legend=FALSE)+
@@ -385,154 +292,145 @@ plot_race_eth = ggplot(data=DATA_ci_re,aes(x=x,y=y,ymin=ymin,ymax=ymax,color=rac
         axis.line.y = element_line(color = "black",linewidth=0.4))+
   scale_x_continuous(limits=c(0,5),expand=(c(0.01,0.01)))+ 
   scale_y_continuous(limits=c(0,.2),expand=c(0.005,0.005))
+
 plot_race_eth
-#In this plot, we have two groups, so it gets busy to also show other
-#cause deaths. We drop them from this plot.
 ```
 
 ```{r}
-#Here is code to plot cumulative incidence of cancer death by subsite
-
-#For ease of plotting for other covariates, use generic plot code after setting
-df_subsite=sf_subsite
-#Create a data matrix with the correct number of rows. A 0 for each group plus the sum of the number of rows for each subgroup. I'm going to drop "unknown" race.
+# Plot cumulative incidence of cancer death by subsite
+# For ease of plotting for other covariates, use generic plot code after setting
+df_subsite <- sf_subsite
+# Create a data matrix with the correct number of rows:
+# A 0 for each group plus the sum of the number of rows for each subgroup.
+# Drop "unknown" race.
 DATA_ci_subsite=matrix(NA,nrow=(4+sum(df_subsite$strata[1:4])),ncol=4)
-#x
-DATA_ci_subsite[,1]=c(0,df_subsite$time[1:df_subsite$strata[1]],
+# x
+DATA_ci_subsite[,1] <- c(0,df_subsite$time[1:df_subsite$strata[1]],
            0,df_subsite$time[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2]))],
            0,df_subsite$time[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3]))],
            0,df_subsite$time[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4]))])
-#Do you see the pattern?
-#y
-DATA_ci_subsite[,2]=c(0,df_subsite$pstate[1:df_subsite$strata[1],2],
+# y
+DATA_ci_subsite[,2] <- c(0,df_subsite$pstate[1:df_subsite$strata[1],2],
            0,df_subsite$pstate[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
            0,df_subsite$pstate[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
            0,df_subsite$pstate[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
-#95C% CI low
-DATA_ci_subsite[,3]=c(0,df_subsite$lower[1:df_subsite$strata[1],2],
+#95% CI (lower bound)
+DATA_ci_subsite[,3] <- c(0,df_subsite$lower[1:df_subsite$strata[1],2],
            0,df_subsite$lower[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
            0,df_subsite$lower[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
            0,df_subsite$lower[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
-#%95 CI high
-DATA_ci_subsite[,4]=c(0,df_subsite$upper[1:df_subsite$strata[1],2],
+#95% CI (upper bound)
+DATA_ci_subsite[,4] <- c(0,df_subsite$upper[1:df_subsite$strata[1],2],
            0,df_subsite$upper[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
            0,df_subsite$upper[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
            0,df_subsite$upper[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
-DATA_ci_subsite=as.data.frame(DATA_ci_subsite)
-colnames(DATA_ci_subsite)=c("x","y","ymin","ymax")
-breaks=which(c(DATA_ci_subsite$x,0)==0)[-1]
-DATA_ci_subsite$subsite=c(rep("Head and Neck",   1+df_subsite$strata[1]),
+DATA_ci_subsite <- as.data.frame(DATA_ci_subsite)
+colnames(DATA_ci_subsite) <- c("x","y","ymin","ymax")
+breaks <- which(c(DATA_ci_subsite$x,0) == 0)[-1]
+DATA_ci_subsite$subsite <- c(rep("Head and Neck", 1+df_subsite$strata[1]),
            rep("Trunk", 1+ df_subsite$strata[2]),
            rep("Arm", 1+ df_subsite$strata[3]),
            rep("Leg", 1+ df_subsite$strata[4]))
-DATA_ci_subsite$subsite=factor(DATA_ci_subsite$subsite)
+DATA_ci_subsite$subsite = factor(DATA_ci_subsite$subsite)
 
-
-plot_subsite = ggplot(data=DATA_ci_subsite,aes(x=x,y=y,ymin=ymin,ymax=ymax,color=subsite))+
-  scale_color_manual(values=mycolors(6)[-6],name ="Anatomical Subsite")+
-  geom_ribbon(aes(fill=subsite,linetype=NA),alpha=0.25,show.legend=FALSE)+
-  geom_line(linewidth=0.75)+
-  scale_fill_manual(guide="none",values=mycolors(6)[-6])+
-  theme_bw(base_size = 8) + labs(x='Years since diagnosis', y='Fraction dead from cancer')+
-  theme(axis.title.y=element_text(vjust=1.5))+
+# In this plot, we have two groups, so it gets busy to also show other
+# cause deaths. We drop them from this plot.
+plot_subsite <- ggplot(data = DATA_ci_subsite, aes(x = x, y = y, ymin = ymin, ymax = ymax, color = subsite)) +
+  scale_color_manual(values = mycolors(6)[-6],name ="Anatomical Subsite") +
+  geom_ribbon(aes(fill = subsite, linetype = NA), alpha = 0.25, show.legend = FALSE) +
+  geom_line(linewidth = 0.75) +
+  scale_fill_manual(guide="none",values=mycolors(6)[-6]) +
+  theme_bw(base_size = 8) + labs(x='Years since diagnosis', y='Fraction dead from cancer') +
+  theme(axis.title.y=element_text(vjust=1.5)) +
   theme(legend.position = "inside",
-        legend.position.inside = c(0.2,0.7),legend.key = element_blank(),
-        legend.background=element_blank(),legend.text=element_text(size=7),
-        legend.key.height=unit(0.05,"inch"))+
+        legend.position.inside = c(0.2,0.7), legend.key = element_blank(),
+        legend.background = element_blank(), legend.text = element_text(size = 7),
+        legend.key.height = unit(0.05,"inch")) +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.line.x = element_line(color = "black",linewidth=0.4),
-        axis.line.y = element_line(color = "black",linewidth=0.4))+
-  scale_x_continuous(limits=c(0,5),expand=(c(0.01,0.01)))+ 
-  scale_y_continuous(limits=c(0,0.2),expand=c(0.005,0.005))
+        axis.line.x = element_line(color = "black", linewidth = 0.4),
+        axis.line.y = element_line(color = "black", linewidth = 0.4))+
+  scale_x_continuous(limits = c(0,5), expand=(c(0.01, 0.01))) + 
+  scale_y_continuous(limits = c(0,0.2), expand=c(0.005, 0.005))
+
 plot_subsite
-#In this plot, we have two groups, so it gets busy to also show other
-#cause deaths. We drop them from this plot.
 ```
 
 ```{r}
-#Here is code to plot cumulative incidence of cancer death by race and ethnicity
+# Plot cumulative incidence of cancer death by race and ethnicity
+# For ease of plotting for other covariates, use generic plot code after setting
+df_age <- sf_age
 
-#For ease of plotting for other covariates, use generic plot code after setting
-df_age=sf_age
-#Create a data matrix with the correct number of rows. A 0 for each group plus the sum of the number of rows for each subgroup. I'm going to drop "unknown" race.
-DATA_ci_age=matrix(NA,nrow=(4+sum(df_age$strata[1:4])),ncol=4)
-#x
-DATA_ci_age[,1]=c(0,df_age$time[1:df_age$strata[1]],
+# Create a data matrix with the correct number of rows:
+# A 0 for each group plus the sum of the number of rows for each subgroup.
+# Drop "unknown" race.
+DATA_ci_age <- matrix(NA,nrow=(4+sum(df_age$strata[1:4])),ncol=4)
+# x
+DATA_ci_age[,1] <- c(0,df_age$time[1:df_age$strata[1]],
            0,df_age$time[(1+df_age$strata[1]):(sum(df_age$strata[1:2]))],
            0,df_age$time[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3]))],
            0,df_age$time[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4]))])
-#Do you see the pattern?
-#y
-DATA_ci_age[,2]=c(0,df_age$pstate[1:df_age$strata[1],2],
+# y
+DATA_ci_age[,2] <- c(0,df_age$pstate[1:df_age$strata[1],2],
            0,df_age$pstate[(1+df_age$strata[1]):(sum(df_age$strata[1:2])),2],
            0,df_age$pstate[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])),2],
            0,df_age$pstate[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])),2])
-#95C% CI low
-DATA_ci_age[,3]=c(0,df_age$lower[1:df_age$strata[1],2],
+# 95% CI (lower bound)
+DATA_ci_age[,3] <- c(0,df_age$lower[1:df_age$strata[1],2],
            0,df_age$lower[(1+df_age$strata[1]):(sum(df_age$strata[1:2])),2],
            0,df_age$lower[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])),2],
            0,df_age$lower[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])),2])
-#%95 CI high
-DATA_ci_age[,4]=c(0,df_age$upper[1:df_age$strata[1],2],
+# 95% CI (upper bound)
+DATA_ci_age[,4] <- c(0,df_age$upper[1:df_age$strata[1],2],
            0,df_age$upper[(1+df_age$strata[1]):(sum(df_age$strata[1:2])),2],
            0,df_age$upper[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])),2],
            0,df_age$upper[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])),2])
-DATA_ci_age=as.data.frame(DATA_ci_age)
-colnames(DATA_ci_age)=c("x","y","ymin","ymax")
-breaks=which(c(DATA_ci_age$x,0)==0)[-1]
-DATA_ci_age$age=c(rep("<50",   1+df_age$strata[1]),
+DATA_ci_age <- as.data.frame(DATA_ci_age)
+colnames(DATA_ci_age) <- c("x","y","ymin","ymax")
+breaks <- which(c(DATA_ci_age$x,0) == 0)[-1]
+DATA_ci_age$age <- c(rep("<50", 1+df_age$strata[1]),
            rep("50-59", 1+ df_age$strata[2]),
            rep("60-69", 1+ df_age$strata[3]),
            rep("+70", 1+ df_age$strata[4]))
-DATA_ci_age$age=factor(DATA_ci_age$age)
+DATA_ci_age$age <- factor(DATA_ci_age$age)
 
-
-plot_age = ggplot(data=DATA_ci_age,aes(x=x,y=y,ymin=ymin,ymax=ymax,color=age))+
-  scale_color_manual(values=mycolors(6)[-6],name ="Age Groups")+
-  geom_ribbon(aes(fill=age,linetype=NA),alpha=0.25,show.legend=FALSE)+
-  geom_line(linewidth=0.75)+
-  scale_fill_manual(guide="none",values=mycolors(6)[-6])+
-  theme_bw(base_size = 8) + labs(x='Years since diagnosis', y='Fraction dead from cancer')+
-  theme(axis.title.y=element_text(vjust=1.5))+
+# In this plot, we have two groups, so it gets busy to also show other
+# cause deaths. We drop them from this plot.
+plot_age <- ggplot(data = DATA_ci_age, aes(x = x, y = y, ymin = ymin, ymax = ymax, color = age)) +
+  scale_color_manual(values = mycolors(6)[-6], name ="Age Groups") +
+  geom_ribbon(aes(fill = age, linetype = NA), alpha = 0.25, show.legend = FALSE) +
+  geom_line(linewidth = 0.75) +
+  scale_fill_manual(guide="none", values = mycolors(6)[-6]) +
+  theme_bw(base_size = 8) + labs(x = 'Years since diagnosis', y = 'Fraction dead from cancer') +
+  theme(axis.title.y = element_text(vjust = 1.5)) +
   theme(legend.position = "inside",
         legend.position.inside = c(0.2,0.7),legend.key = element_blank(),
-        legend.background=element_blank(),legend.text=element_text(size=7),
-        legend.key.height=unit(0.05,"inch"))+
+        legend.background = element_blank(), legend.text = element_text(size=7),
+        legend.key.height=unit(0.05,"inch")) +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.line.x = element_line(color = "black",linewidth=0.4),
-        axis.line.y = element_line(color = "black",linewidth=0.4))+
-  scale_x_continuous(limits=c(0,5),expand=(c(0.01,0.01)))+ 
-  scale_y_continuous(limits=c(0,0.2),expand=c(0.005,0.005))
+        axis.line.x = element_line(color = "black", linewidth = 0.4),
+        axis.line.y = element_line(color = "black", linewidth = 0.4))+
+  scale_x_continuous(limits = c(0, 5), expand = (c(0.01, 0.01)))+ 
+  scale_y_continuous(limits = c(0, 0.2), expand = c(0.005, 0.005))
+
 plot_age
-#In this plot, we have two groups, so it gets busy to also show other
-#cause deaths. We drop them from this plot.
 ```
 
-**Q2**: Plot the fraction of the population that has died of their cancer over the first 5 years by demographic characteristic (age, sex, race and ethnicity) and tumor characteristics (stage, subtype).
-(You can adjust the y-limit to something suitable for your cancer---just pick something that's appropriate for all variables.) Along which characteristics are there large disparities in survival?
-Do you think these disparities are caused by biological or other factors (e.g., access to or quality of care)?
+# 4/ Cox proportional hazards models
+We saw in the above plots that covariates impact the survival. If we assume that the rates are proportional over time, what are the hazard ratios?
 
-> **Answer:**
-The overall characteristics of survival of melanoma is that all stratified survival rates except for two have a cumulative incidence around 0.1 or less. The two stratified variables that are above 0.1 was seen in the race variable among the black and asian or pacific islander. A noticable diparity is that blacks have almost 3 times the cumulative incidence of death than whites, whom from previous labs we know whites dominate the overall incidence of this cancer. Other large (using this term losely due to the low incidence but rather significant difference if ratio is taken) disparities are between men and women, men are almost twice as likely to die from melanoma than women. The anatomical location of head and neck has twice the cumulative incidence of death as the arm location. The last variable of interest age was initally very confusing to me due to the cumulative incidence in death being the highest in the <50 age group which was a little over 0.1 with all other ages being below 0.05. 
-I think these disparities are not caused biological factors, I think they are caused by other factors primarily lack of screening and early diagosis. Melanoma is a cancer that is highly associated with lighter pigmentent skin color and over the age of 50. The location of head and neck also might be missed do to people not being able to see these locations as easily as other areas of their body like arms, and trunk. Women also have a tendency to be more proactive about screening than men which explains that differnce. To further explain the race and location cumulative incidence in death further, I will give an example. A 40 year old black male has a mole on the bottom of his foot (high rate of incidence for blacks in this location) will be missed very frequenly by the case and the health care professions, than his white female counterpart. This causes the cancer to progress to late stages leading to higher incidence of death with lower incidence of overall cases.
-
-## 5 Cox proportional hazards models
+We will focus on survival in the first 5 years.
 
 ```{r}
-#We saw in the above plots that covariates impact the survival
-#If we assume that the rates are proportional over time, what are
-#the hazard ratios?
-#We will focus on survival in the first 5 years
-
 # Define a censoring variable at 5 years survival
 data$censored.time <- ifelse(data$time > 5, 5, data$time)
-data$censored.event <- ifelse(data$time > 5, "Alive",  as.character(data$event))
+data$censored.event <- ifelse(data$time > 5, "Alive", as.character(data$event))
+
 # Because we are considering the instantaneous rate of cancer death,
 # we treat other deaths as being censored
 data$cancer.death <- (data$censored.event == "Cancer death")
@@ -540,60 +438,67 @@ data$cancer.death <- (data$censored.event == "Cancer death")
 # Generate survival object 
 cancer.death.surv.5yr <- Surv(data$censored.time, data$cancer.death)
 
-#By sex male
-fit.coxph.sex <- coxph(cancer.death.surv.5yr ~ sex , data = data)
+# By sex male
+fit.coxph.sex <- coxph(cancer.death.surv.5yr ~ sex,
+                       data = data)
 summary(fit.coxph.sex)
-#The hazard ratio is exp(ceof). Is is significant?
+# The hazard ratio is exp(ceof). Is it significant?
 
-#Stage is the most important predictor of stage, so other variable are 
-#vulnerable to confounding. We should adjust for stage.
-fit.coxph.sex_stage <- coxph(cancer.death.surv.5yr ~ sex + stage, data = data)
+# Stage is the most important predictor of stage, so other variables are 
+# vulnerable to confounding. We should adjust for stage.
+fit.coxph.sex_stage <- coxph(cancer.death.surv.5yr ~ sex + stage,
+                             data = data)
 summary(fit.coxph.sex_stage)
 
-#Stage is the most important predictor of stage, so other variable are 
-#vulnerable to confounding. We should adjust for stage.
-fit.coxph.sex_full <- coxph(cancer.death.surv.5yr ~ sex + stage + age + yod + race + event + subsite, data = data)
+fit.coxph.sex_full <- coxph(cancer.death.surv.5yr ~ sex + stage + age + yod + race + event + subsite,
+                            data = data)
 summary(fit.coxph.sex_full)
-#Did the hazard ratio for sex increase or decrease?
-#What if we included all the covariates in a multivariable model?
+# Did the hazard ratio for sex increase or decrease?
+# What if we included all the covariates in a multivariable model?
 ```
 
 ```{r}
 data_sex_female = data
 data_sex_female$sex = relevel(data$sex, ref = "Male")
 
-#By sex female
-fit.coxph.sex_female <- coxph(cancer.death.surv.5yr ~ sex , data = data_sex_female)
+# By sex female
+fit.coxph.sex_female <- coxph(cancer.death.surv.5yr ~ sex,
+                              data = data_sex_female)
 summary(fit.coxph.sex_female)
 
-#Stage is the most important predictor of stage
-fit.coxph.sex_female_stage <- coxph(cancer.death.surv.5yr ~ sex + stage, data = data_sex_female)
+# Stage is the most important predictor of stage, so other variable are 
+# vulnerable to confounding. We should adjust for stage.
+fit.coxph.sex_female_stage <- coxph(cancer.death.surv.5yr ~ sex + stage,
+                                    data = data_sex_female)
 summary(fit.coxph.sex_female_stage)
 
-#Stage is the most important predictor of stage, so other variable are 
-#vulnerable to confounding. We should adjust for stage.
-fit.coxph.sex_female_full <- coxph(cancer.death.surv.5yr ~ sex + stage + age + yod + race + event + subsite, data = data_sex_female)
+fit.coxph.sex_female_full <- coxph(cancer.death.surv.5yr ~ sex + stage + age + yod + race + event + subsite,
+                                   data = data_sex_female)
 summary(fit.coxph.sex_female_full)
 ```
 
 ```{r}
 # Define a censoring variable at 5 years survival
-#By race black
-fit.coxph.race_black <- coxph(cancer.death.surv.5yr ~ race , data = data)
+# By race (black)
+fit.coxph.race_black <- coxph(cancer.death.surv.5yr ~ race,
+                              data = data)
 summary(fit.coxph.race_black)
-#The hazard ratio is exp(ceof). Is is significant?
+# The hazard ratio is exp(ceof). Is is significant?
 
-#Stage is the most important predictor of stage, so other variable are 
-#vulnerable to confounding. We should adjust for stage.
-fit.coxph.race_black_stage <- coxph(cancer.death.surv.5yr ~ race + stage, data = data)
+# Stage is the most important predictor of stage, so other variable are 
+# vulnerable to confounding. We should adjust for stage.
+fit.coxph.race_black_stage <- coxph(cancer.death.surv.5yr ~ race + stage,
+                                    data = data)
 summary(fit.coxph.race_black_stage)
 
-#Stage is the most important predictor of stage, so other variable are 
-#vulnerable to confounding. We should adjust for stage.
-fit.coxph.race_black_full <- coxph(cancer.death.surv.5yr ~ race + stage + age + yod + sex + event + subsite, data = data)
+# Stage is the most important predictor of stage, so other variable are 
+# vulnerable to confounding. We should adjust for stage.
+fit.coxph.race_black_full <- coxph(cancer.death.surv.5yr ~ race + stage + age + yod + sex + event + subsite,
+                                   data = data)
 summary(fit.coxph.race_black_full)
-#Did the hazard ratio for sex increase or decrease?
-#What if we included all the covariates in a multivariable model?
+
+# Did the hazard ratio for sex increase or decrease?
+# What if we included all the covariates in a multivariable model?
 ```
 
 ```{r}
@@ -601,94 +506,101 @@ data_race_white = data
 data_race_white$race = relevel(data$race, ref = "Non-Hispanic Black")
 
 # Define a censoring variable at 5 years survival
-#By race white
-fit.coxph.race_white <- coxph(cancer.death.surv.5yr ~ race , data = data_race_white)
+# By race white
+fit.coxph.race_white <- coxph(cancer.death.surv.5yr ~ race,
+                              data = data_race_white)
 summary(fit.coxph.race_white)
-#The hazard ratio is exp(ceof). Is is significant?
+# The hazard ratio is exp(ceof). Is is significant?
 
-#Stage is the most important predictor of stage, so other variable are 
-#vulnerable to confounding. We should adjust for stage.
-fit.coxph.race_white_stage <- coxph(cancer.death.surv.5yr ~ race + stage, data = data_race_white)
+# Stage is the most important predictor of stage, so other variable are 
+# vulnerable to confounding. We should adjust for stage.
+fit.coxph.race_white_stage <- coxph(cancer.death.surv.5yr ~ race + stage,
+                                    data = data_race_white)
 summary(fit.coxph.race_white_stage)
 
-#Stage is the most important predictor of stage, so other variable are 
-#vulnerable to confounding. We should adjust for stage.
-fit.coxph.race_white_full <- coxph(cancer.death.surv.5yr ~ race + stage + age + yod + sex + event + subsite, data = data_race_white)
+# Stage is the most important predictor of stage, so other variable are 
+# vulnerable to confounding. We should adjust for stage.
+fit.coxph.race_white_full <- coxph(cancer.death.surv.5yr ~ race + stage + age + yod + sex + event + subsite,
+                                   data = data_race_white)
 summary(fit.coxph.race_white_full)
-#Did the hazard ratio for sex increase or decrease?
-#What if we included all the covariates in a multivariable model?
+# Did the hazard ratio for sex increase or decrease?
+# What if we included all the covariates in a multivariable model?
 ```
+
 ```{r}
 # Define a censoring variable at 5 years survival
-#By subsite
-fit.coxph.subsite <- coxph(cancer.death.surv.5yr ~ subsite , data = data)
+# By subsite
+fit.coxph.subsite <- coxph(cancer.death.surv.5yr ~ subsite,
+                           data = data)
 summary(fit.coxph.subsite)
 
-fit.coxph.subsite_stage <- coxph(cancer.death.surv.5yr ~ subsite + stage, data = data)
+fit.coxph.subsite_stage <- coxph(cancer.death.surv.5yr ~ subsite + stage,
+                                 data = data)
 summary(fit.coxph.subsite_stage)
 
-
-fit.coxph.subsite_full <- coxph(cancer.death.surv.5yr ~ subsite + stage + age + yod + sex + event + race, data = data)
+fit.coxph.subsite_full <- coxph(cancer.death.surv.5yr ~ subsite + stage + age + yod + sex + event + race,
+                                data = data)
 summary(fit.coxph.subsite_full)
 
 ```
 
 ```{r}
 # Define a censoring variable at 5 years survival
-#By age
-fit.coxph.age <- coxph(cancer.death.surv.5yr ~ age , data = data)
+# By age
+fit.coxph.age <- coxph(cancer.death.surv.5yr ~ age,
+                       data = data)
 summary(fit.coxph.age)
 
-fit.coxph.age_stage <- coxph(cancer.death.surv.5yr ~ age + stage, data = data)
+fit.coxph.age_stage <- coxph(cancer.death.surv.5yr ~ age + stage,
+                             data = data)
 summary(fit.coxph.age_stage)
 
-
-fit.coxph.age_full <- coxph(cancer.death.surv.5yr ~ age + stage + subsite + yod + sex + event + race, data = data)
+fit.coxph.age_full <- coxph(cancer.death.surv.5yr ~ age + stage + subsite + yod + sex + event + race,
+                            data = data)
 summary(fit.coxph.age_full)
 ```
 
 
 ```{r}
-data_age_70 = data
-data_age_70$age = relevel(data$age, ref = "<50")
+data_age_70 <- data
+data_age_70$age <- relevel(data$age, ref = "<50")
 
 # Define a censoring variable at 5 years survival
-#By age greater 70
-fit.coxph.age_70 <- coxph(cancer.death.surv.5yr ~ age , data = data_age_70)
+# By age greater 70
+fit.coxph.age_70 <- coxph(cancer.death.surv.5yr ~ age,
+                          data = data_age_70)
 summary(fit.coxph.age_70)
 
-fit.coxph.age_70_stage <- coxph(cancer.death.surv.5yr ~ age + stage, data = data_age_70)
+fit.coxph.age_70_stage <- coxph(cancer.death.surv.5yr ~ age + stage,
+                                data = data_age_70)
 summary(fit.coxph.age_70_stage)
 
-fit.coxph.age_70_full <- coxph(cancer.death.surv.5yr ~ age + stage + subsite + yod + sex + event + race, data = data_age_70)
+fit.coxph.age_70_full <- coxph(cancer.death.surv.5yr ~ age + stage + subsite + yod + sex + event + race,
+                               data = data_age_70)
 summary(fit.coxph.age_70_full)
-
 ```
+
 ```{r}
-data_subsite_hn = data
-data_subsite_hn$subsite = relevel(data$subsite, ref = "Trunk")
+data_subsite_hn <- data
+data_subsite_hn$subsite <- relevel(data$subsite, ref = "Trunk")
 
 # Define a censoring variable at 5 years survival
-#By race white
-fit.coxph.subsite_hn <- coxph(cancer.death.surv.5yr ~ subsite , data = data_subsite_hn)
+# By race white
+fit.coxph.subsite_hn <- coxph(cancer.death.surv.5yr ~ subsite,
+                              data = data_subsite_hn)
 summary(fit.coxph.subsite_hn)
 
-fit.coxph.subsite_hn_stage <- coxph(cancer.death.surv.5yr ~ subsite + stage, data = data_subsite_hn)
+fit.coxph.subsite_hn_stage <- coxph(cancer.death.surv.5yr ~ subsite + stage,
+                                    data = data_subsite_hn)
 summary(fit.coxph.subsite_hn_stage)
 
-fit.coxph.subsite_hn_full <- coxph(cancer.death.surv.5yr ~ subsite + stage + age + yod + sex + event + race, data = data_subsite_hn)
+fit.coxph.subsite_hn_full <- coxph(cancer.death.surv.5yr ~ subsite + stage + age + yod + sex + event + race,
+                                   data = data_subsite_hn)
 summary(fit.coxph.subsite_hn_full)
 ```
 
 
-**Q3**: Censoring the data after 5 years, compute Cox proportional hazards models for each covariate in univariable, bivariable (with stage), and multivariable (all covariates) models.
-Fill in the following table, modifying as appropriate to your cancer.
-Each cell should have the formate "Hazard ratio (95%CI); p-value".
-Do any of the hazard ratios change substantially when accounting for age or other variables?
-Why do you think this is?
-
-> **Answer:** The hazard ratios that I feel changed substantially or noticablly when accounting for age or other variables were the crude hazard ratio for age ≥70, sex, and black race. The most noticeable change occured in age ≥70 the crude hazard ratio fell from 3.27 to 1.53 in the full model, this indicates that a large portion of the crude age effect is explained by the other variables in the model. Another less noticable difference occured in the sex variable. The female drastically and male mildly however both of these variable changed from being under 1 for female and over 1 for males to over 1 for females to under 1 for males. The crude hazard ratio for female sex increased from 0.61 to 1.49 and males from 1.65 to .98 (which was deemed not significant by the p-value. These differences were greater than 10% and are consistent with confounding or mediation by other variables. The last noticable change in hazard ratios was for black race. The crude hazard ratio for black race was 2.07 and the full model was 1.18. This means like the age 70+ variable, this indicates an effect that is explained by the other variables in the model. Head and neck also had a mild change from 1.62 in crude to 1.00 in the full model, this was not significant but just another noticable change.
-
+Censoring the data after 5 years, we compute the Cox proportional hazards models for each covariate in univariable, bivariable (with stage), and multivariable (all covariates) models.
 
 | Group           | Univariable                       | Bivariable (with stage)            | Multivariable                           |     |
 |---------------|------------------|------------------|--------------------|-----------------|
@@ -704,90 +616,3 @@ Why do you think this is?
 | Trunk           | 0.62 (95%CI: 0.60, 0.64); p\<0.001| 0.74 (95%CI: 0.72, 0.77); p\<0.001 | 0.99 (95%CI: 0.96, 1.03); p = 0.730132  |     |     
 | Arm             | 0.52 (95%CI: 0.50, 0.54); p\<0.001| 0.66 (95%CI: 0.64, 0.68); p\<0.001 | 0.92 (95%CI: 0.89, 0.95); p\<0.001      |     |  
 | Leg             | 0.74 (95%CI: 0.72, 0.77); p\<0.001| 0.79 (95%CI: 0.76, 0.81); p\<0.001 | 0.92 (95%CI: 0.79, 0.95); p\<0.001      |     |     
-
-## 5 (**Optional** challenge) Cox models with continuous time-dependence
-
-The proportional hazards assumption may be too strong in some cases, particularly over longer periods of time.
-Some covariates may impact survival strongly at first (e.g., during the treatment period) and make less of a difference later.
-
-```{r}
-# data_small=data[sample(1:nrow(data),100000),] #Use this code if your data has too many people in it to run the cfit_sex_cancer model below 
-# 
-# #Now, because we are allowing for non-proportional hazards through
-# #time-varing effects, we could consider the full time range
-# data$cancer.death <- (data$event == "Cancer death")
-# cancer.death.surv<- Surv(data$time, data$cancer.death)
-# 
-# cfit_sex_cancer= coxph(cancer.death.surv ~ tt(sex)+stage, data=data,
-#                       tt=function(var,time,...) {
-#                           mtrx = model.matrix(~var)[,-1,drop=FALSE]
-#                           t=time
-#                           knots= quantile(t, c(1/5, 2/5, 3/5, 4/5))
-#                           X=bs(t,knots=knots,intercept=TRUE,degree=3L)
-# 
-#                           if(ncol(mtrx)>1){
-#                             design = mtrx[,1] * X
-#                             for (i in 2:(length(levels(var))-1)){
-#                               design=cbind(design,mtrx[,i] * X)}}else{design = mtrx[,1] * X}
-# 
-#                           return(design)
-#                         })
-# 
-# x=seq(0,quantile(data$time,1),by=1/12)
-# knots= quantile(data$time, c(1/5, 2/5, 3/5, 4/5))
-# X=bs(x,knots=knots,intercept=TRUE,degree=3L)
-# ratios_sex_cancer=exp(X %*% cfit_sex_cancer$coefficients[1:ncol(X)])
-# #
-# #
-# low=rep(NA,length(x))
-# high=rep(NA,length(x))
-# tX=t(X)
-# for (i in 1:length(x)){
-#    low[i] = exp(sum((X[i,])*cfit_sex_cancer$coefficients[1:ncol(X)]) -qnorm(0.975) *sqrt((X[i,])%*% cfit_sex_cancer$var[1:ncol(X),1:ncol(X)] %*% (tX[,i])))
-#    high[i] = exp(sum((X[i,])*cfit_sex_cancer$coefficients[1:ncol(X)]) +qnorm(0.975) *sqrt((X[i,])%*% cfit_sex_cancer$var[1:ncol(X),1:ncol(X)] %*% (tX[,i])))
-#  }
-# 
-#  DATA=matrix(NA,nrow=240*2,ncol=4)
-#  DATA[,1]=rep(x[0:(20*12)],2)
-#  DATA[1:240,2]    =  rep(1,240)
-#  DATA[241:480,2]  =  ratios_sex_cancer[0:(20*12)]
-#  DATA[1:240,3]    = rep(1,240)
-#  DATA[241:480,3]  = low[0:(20*12)]
-#  DATA[1:240,4]    = rep(1,240)
-#  DATA[241:480,4]  = high[0:(20*12)]
-#  DATA=as.data.frame(DATA)
-#  colnames(DATA)=c("x","y","ymin","ymax")
-#  DATA$Sex=c(rep("Female",240),rep("Male",240))
-#  DATA$Sex=factor(DATA$Sex,levels=c("Female","Male"))
-# 
-# time_var_sex = ggplot(data=DATA,aes(x=x,y=y,ymin=ymin,ymax=ymax,color=Sex))+
-#   scale_color_manual(values=c("black","firebrick2"))+
-#    geom_line(cex=0.75)+
-#    geom_ribbon(aes(fill=Sex,linetype=NA),alpha=0.25,show.legend=FALSE)+
-#    scale_fill_manual(guide='none',values=c("black","firebrick2"))+
-#    theme_bw(base_size = 8) + labs(x='Years since diagnosis', y='Hazard ratio (log-scale)')+
-#    theme(axis.title.y=element_text(vjust=1.5))+
-#    theme(legend.position.inside = c(0.3,0.8),legend.key = element_blank(),
-#          legend.background=element_blank(),legend.text=element_text(size=7),
-#          legend.key.height=unit(0.05,"inch"))+
-#    theme(panel.border = element_blank(),
-#          panel.background = element_blank(),
-#          panel.grid.major = element_blank(),
-#          panel.grid.minor = element_blank(),
-#          axis.line.x = element_line(color = "black",linewidth=0.4),
-#          axis.line.y = element_line(color = "black",linewidth=0.4))+
-#    scale_x_continuous(limits=c(0,5),expand=(c(0.01,0.01)),breaks=c(0,5,10,15,20))+
-#    scale_y_log10(limits=c(1/8,8),expand=c(0.005,0.005),breaks=c(0.2, 0.5, 1, 2, 5))
-# #
-# time_var_sex
-```
-
-**Q4:** Use the provided code to plot the time-varying effect of sex on survival.
-Does the effect vary over time, or is it constant?
-How does it compare to what you estimated in the univariable Cox proportional hazard model above?
-
-> **Answer**: I could not get this to run.
-
-**Q5:** How do the other effects of the other characteristics on survival vary over time?
-
-> **Answer**:I could not get this to run.
