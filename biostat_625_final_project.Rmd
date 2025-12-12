@@ -1,0 +1,50 @@
+---
+title: "Demographic Patterns of Melanoma: Comparing Incidence and Survival Among Black and White Populations"
+author: "Violette Bonvallet, Andre Gala-Garza, Lynle Hayes"
+date: "2025-12-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**TODO: The limit of our report is 5 pages. Use the ggplot2 library in r to display the results. (Just copy the images from the R code; no need to use all of the code in this report.)**
+
+# Abstract
+**TODO: Summarize the project here.**
+
+# Introduction
+Melanoma is the most aggressive form of skin cancer, arising from melanocytes in the epidermis. Its incidence has increased sharply in recent decades, especially among fair-skinned populations who face higher susceptibility to ultraviolet (UV) radiation (Culp et al., 2019). Major risk factors include intermittent or intense UV exposure, a history of blistering sunburns, numerous or atypical nevi, older age, male sex, indoor tanning, immunosuppression, and genetic mutations such as *CDKN2A* and *BRAF* (Culp et al., 2019). Although early detection has improved outcomes, incidence continues to rise without a proportional decline in mortality.
+
+Substantial racial disparities exist in the burden and outcomes of melanoma in the United States. Non-Hispanic White adults have the highest incidence, while melanoma remains rare among Black individuals, approximately 1 in 38 for White individuals versus 1 in 1,000 for Black individuals (Culp et al., 2019). However, Black patients are far more likely to be diagnosed at later stages and experience poorer survival. Recent qualitative research shows that many Black adults do not perceive themselves at risk, are unfamiliar with melanoma, and rarely encounter public health messages that depict skin cancer on darker skin (de Vere Hunt et al., 2023). These communication gaps are especially concerning because the predominant melanoma subtype in Black populations, acral lentiginous melanoma, occurs on the palms, soles, and nails, areas not traditionally a focus for sun prevention campaigns.
+
+The Surveillance, Epidemiology, and End Results (SEER) program provides comprehensive, population-based cancer data essential for evaluating these disparities (National Cancer Institute, 2025). Melanoma cases are identified using ICD-O-3 histology codes 8720–8799 and primary site codes C44.0–C44.7, which allow systematic analysis of anatomical patterns and demographic trends (Zabor et al., 2021). In our research, primary sites are categorized as head and neck, trunk, arms, and legs.
+
+The goal of this study is to examine differences in melanoma incidence and survival between Black and White populations using SEER data from 1985–2022. By applying statistical methods including joinpoint trend analyses and survival models, we aim to clarify where disparities persist and provide evidence to support more equitable early detection and public health strategies.
+
+# Methods
+**TODO: What did we use to run our code?**
+
+# Results
+**TODO: What did our code output?**
+
+# Conclusion
+**TODO: What are our takeaways?**
+
+# References
+* Culp, M. B., & Lunsford, N. B. (2019). *Melanoma among non-Hispanic Black Americans.* Preventing Chronic Disease, 16, 180640. https://doi.org/10.5888/pcd16.180640
+* de Vere Hunt, I., Owen, S., Amuzie, A., Nava, V., Tomz, A., Barnes, L., Robinson, J. K., Lester, J., Swetter, S., & Linos, E. (2023). Qualitative exploration of melanoma awareness in Black people in the USA. *BMJ Open,* 13(1), e066967. 
+* Department of Health. (2007). *World class commissioning: Adding life to years and years to life.* London: Department of Health Commissioning. www.dh.gov.uk/prod_consum_dh/idcplg?IdcService=GET_FILE&dID=155367&Rendition=Web
+* National Cancer Institute. (2025). *Surveillance, Epidemiology, and End Results (SEER) Program.* U.S. Department of Health and Human Services, National Institutes of Health. https://seer.cancer.gov
+* National Institute for Health Research. (2008). *Transforming health research: The first two years. Progress report 2006–2008.* London: NIHR. http://www.nihr.ac.uk/files/pdfs/NIHR%20Progress%20Report%202006-2008.pdf
+* Zabor, E. C., Styperek, A., Christos, P. J., & Hale, C. S. (2021). Melanoma epidemiology and ICD-O-3 coding considerations for cancer surveillance. *Journal of the National Cancer Institute.*
+
+# Supplementary Information
+**Group Member Contributions:**
+
+* **Violette Bonvallet:** Contributed to background analysis; Wrote report conclusion
+* **Andre Gala-Garza:** Initiated and maintained the GitHub repository; Reformatted code for style and efficiency; Wrote Methods and Results sections of report
+* **Lynle Hayes:** Designed the initial project proposal; Created initial code base; Wrote report introducton
+
+**GitHub Repository:** https://github.com/AndreGalaGarza/melanomaBD

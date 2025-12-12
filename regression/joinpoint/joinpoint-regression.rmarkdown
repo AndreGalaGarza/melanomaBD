@@ -1,6 +1,6 @@
 ---
 title: "Joinpoint Regression Melanoma Analysis"
-author: "Lynle Hayes; Refactored by Andre Gala-Garza"
+author: "Lynle Hayes"
 format: html
 ---
 
@@ -9,6 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 #install.packages("tidyverse")
 ```
+
+
 
 In class, we used Joinpoint to assess cancer incidence trends for head and neck cancer. In this lab, you will do the same for a cancer of your choice. You are encouraged to continue to use this cancer in labs throughout the course as your build toward the final project, though you may switch at any time.
 
@@ -33,6 +35,8 @@ Load in the data that you retrieved from SEER*Stat for your cancer last week. Fo
 2) by sex, race (not including Other or Unknown categories), and subtype, and
 3) for each combination of the levels of at two subgroups (i.e., race and sex, sex and subtype, or race and subtype).
 To get started, you may want to run just for the cancer overall to start with to make sure you understand the code and then come back to do the subgroups.
+
+
 ```{r}
 library(tidyverse)
 library(ggplot2)
@@ -103,7 +107,7 @@ joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 8) {
       family=poisson(), offset=log(Population))
 
   # Select the best fit number of joinpoints
-  out.glm.best <- selgmented(out.glm, seg.Z = ~ Year, Kmax = kmax, type = "bic", msg = FALSE)
+  out.glm.best <- selgmented(out.glm, seg.Z = ~ Year, Kmax = kmax, type = "bic". msg = FALSE)
   
   # Identify joinpoints
   num_breakpoints <- nrow(out.glm.best$psi)
@@ -136,36 +140,24 @@ joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 8) {
 }
 ```
 
-
 ```{r}
 races <- c("All races", "Black", "White")
 sexes <- c("Male and female", "Male", "Female")
 sites <- c("All sites", "Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)")
 
-combos <- c()
-model_list <- list()
+models <- list()
 
 for (race in races) {
   for (sex in sexes) {
     for (site in sites) {
-      combo <- paste(race, sex, site, sep = " | ")
-      model_obj <- joinpoint_model(data_melanoma, race, sex, site)
-
-      combos <- c(combos, combo)
-      model_list[[length(model_list) + 1]] <- model_obj
+      model_name <- cat(race, sex, site)
+      model <- joinpoint_model(data_melanoma, race, sex, site)
+      cat("Made model", model_name, "\n")
+      models <- append(models, model)
     }
   }
 }
 
-models <- data.frame(
-  Combo = combos,
-  Model = I(model_list),
-  stringsAsFactors = FALSE
-)
-
-```
-
-```{r}
 models
 ```
 
@@ -236,6 +228,7 @@ legend("bottomright",
 
 
 ```
+
 ```{r}
 #Stratified by black and white cases
 
@@ -301,6 +294,7 @@ legend("right",
        inset = c(0.01,0.01))
 
 ```
+
 ```{r}
 #Stratified by anatomical location
 
@@ -410,6 +404,7 @@ legend("topleft",
        cex = 0.85,
        inset = c(0.01,0.01))
 ```
+
 ```{r}
 #Stratified by sex(male and female) and race(black and white)
 
@@ -514,6 +509,7 @@ legend("topleft",
        cex = 0.85,
        inset = c(0.01,0.01))
 ```
+
 ```{r}
 #Stratified by sex(male or female) and subsite
 #Select a data subset. Incidence of melanoma of head and neck cases
@@ -831,6 +827,7 @@ legend("topleft",
        inset = c(0.01,0.01))
 
 ```
+
 ```{r}
 #Stratified by black  and subsite
 
@@ -936,6 +933,7 @@ legend("topleft",
        inset = c(0.01,0.01))
 
 ```
+
 ```{r}
 #Stratified by black male  and subsite
 
@@ -1146,6 +1144,7 @@ legend("topleft",
        inset = c(0.01,0.01))
 
 ```
+
 ```{r}
 #Stratified by black female  and subsite
 
@@ -1250,7 +1249,6 @@ legend("topright",
        cex = 0.85,
        inset = c(0.01,0.01))
 ```
-
 
 ```{r}
 
@@ -1358,6 +1356,8 @@ legend("topleft",
        inset = c(0.01,0.01))
 ```
 
+
+
 **Q1:** Write a short report describing your results, comparing and contrasting the observed trends across demographic groups and subtypes. This report should include the following:
 
 - A table of joinpoint results for each sex x race group overall and for each subtype. If you have more than 12 combinations of groups (the default is 11), you can focus on a reasonable subset of groups. In this table, your rows will be joinpoint intervals for each group and columns will indicate joinpoint trend periods and APCs (if log-scale) or slopes (if analyses in actual scale). Highlight trends (APCs) statistically significant from zero. Include AAPCs for the last two 5-year periods for each demographic group above. 
@@ -1396,3 +1396,4 @@ Looking at women stratified by subsite there the three subsites trunk, arm and l
 The next plot and table rows that is analyzed is the black race stratified by subsite. This is super interesting, blacks have a 3 to 6 times higher incidence of melanoma at subsite leg than any other subsite, which incidence is close to zero. This was the factor driving our female leg incidence up, however, was unnoticeable in the male subsite due to the strong presence of trunk incidence. This information is and curiosity lead me to run plots stratifying all sex by race and subsite, which I included in this report, but did not provide a table of the statistics. An observation is also that trunk and arm both achieved best fit with fewer than 5 joinpoints. Trunk only had one join point at 1986 which had the APC change from 9.5% to 0.1% then stay at 0.1%. This would require a little more research to find out what caused it. This will be investigated and reported in future labs.
 The last group is white stratified by subsite. This plot and joinpoint table is pretty similar to the plot and table of just the subsites. This is due to the white race dominating the regressions due to the unequal distribution of incidence among races.
 One additional observation I want to mention is the consistent decrease in incidence in the AAPC’s for the last two five year periods. These AAPC were consistently either a very low rate usually <1% or a negative rate < 0%. This observation was made in previous labs where around there are noticeable dips in the incidences around 2020. A theory that I have is that the pandemic that occurred from the beginning of 2020 to 2022 caused a decrease in incidence of melanoma. This could be for several reasons, not going to the doctor, not going outside, people dying of covid and not getting checked for melanoma. To further investigate this we would need to obtain the data post the pandemic, which is still being compiled.
+
