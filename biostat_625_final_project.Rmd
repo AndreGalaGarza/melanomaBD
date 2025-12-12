@@ -1,15 +1,13 @@
 ---
 title: "Demographic Patterns of Melanoma: Comparing Incidence and Survival Among Black and White Populations"
 author: "Violette Bonvallet, Andre Gala-Garza, Lynle Hayes"
-date: "2025-12-08"
+date: "2025-12-12"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-**TODO: The limit of our report is 5 pages. Use the ggplot2 library in r to display the results. (Just copy the images from the R code; no need to use all of the code in this report.)**
 
 # Abstract
 **TODO: Summarize the project here.**
@@ -47,4 +45,8 @@ The goal of this study is to examine differences in melanoma incidence and survi
 * **Andre Gala-Garza:** Initiated and maintained the GitHub repository; Reformatted code for style and efficiency; Wrote Methods and Results sections of report
 * **Lynle Hayes:** Designed the initial project proposal; Created initial code base; Wrote report introducton
 
-**GitHub Repository:** https://github.com/AndreGalaGarza/melanomaBD
+**GitHub Repository:** The GitHub repository for this project is available at this link:
+
+https://github.com/AndreGalaGarza/melanomaBD
+
+The R markdown source code for this report document can be found at the base directory as "biostat_625_final_project.Rmd", along with HTML and PDF knitted versions. The source code for each type of regression conducted for this project can be found in the "regression" folder, along with the data used for the project and HTML and PDF knitted versions of each Quarto markdown file.

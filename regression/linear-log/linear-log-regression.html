@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Lynle Hayes">
+<meta name="author" content="Lynle Hayes; Refactored by Andre Gala-Garza">
 
-<title>Unit 4 Lab: Cancer registries</title>
+<title>Linear Log Regression Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Unit 4 Lab: Cancer registries</h1>
+<h1 class="title">Linear Log Regression Analysis</h1>
 </div>
 
 
@@ -90,7 +90,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Lynle Hayes </p>
+             <p>Lynle Hayes; Refactored by Andre Gala-Garza </p>
           </div>
   </div>
     
@@ -103,28 +103,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>In class, we used SEER*Stat to access cancer incidence data for head and neck cancer. In this lab, you will do the same for a cancer of your choice. You are encouraged to continue to use this cancer in labs throughout the course as you build toward the final project, though you may switch at any time.</p>
-<p><strong>Learning objectives:</strong> - Determine the appropriate ICD codes, histologic codes, and any relevant subtypes of a cancer. - Utilize SEER*Stat to access data from the SEER cancer registry. - Visualize cancer incidence and trends by sex, race, and cancer subtype.</p>
-<p><strong>Task:</strong> Follow the steps outlined below, submit a PDF of our output (render as HTML and print the HTML to PDF) that answers the questions in bold below, including any supporting plots. You will be writing your own code for this lab but can use the code provided in Lab 1 as guidance. As with any lab, you may work in groups, but everyone should submit their own response and code, in their own words.</p>
-<p><strong>Criteria:</strong> This assignment will be graded on the correctness and completeness of the answers to the questions and on whether the plots are publication-ready, with easy-to-read text. Use reasonable significant digits (2-3 depending on the scale) when reporting numbers.</p>
-<section id="steps" class="level1">
-<h1>Steps</h1>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">1</h2>
-<p>Decide on a cancer of interest. I generally recommend choosing a relatively broad category of cancers so that it has sufficient cases and has subtypes of interest. It is okay to choose a sex-specific cancer. I do not recommend leukemia or lymphoma, which have some tricky epidemiological patterns and subgroupings. To avoid substantial overlap within the class, we will have a sign-up.</p>
-<p>Once you have confirmed your cancer type with me, do an abbreviated literature search on your cancer of interest (2-5 articles). Hint: search for “SEER” and [your cancer] in Google Scholar, as a starting point. Determine a standard set of ICD and histology codes. For example, for head and neck cancer, most cancers are squamous cell, so we could exclude or distinguish adenocarcinomas. Determine a set of subtypes of your cancer. For head and neck, I distinguished between oropharyngeal, non-oropharyngeal oral cavity, and non-oropharyngeal oral tongue because the epidemiology of these types is different. Or, for lung cancer, I might distinguish between small-cell and non-small-cell carcinomas. Determine how these subtypes are distinguished (e.g., ICD or histologic codes).</p>
-<p><strong>Q1:</strong> In a couple of paragraphs, describe the epidemiology of your cancer, including major risk factors, trends, and epidemiological patterns known in the literature. Report the ICD and histology codes and subtypes that you will be reporting on.</p>
-<blockquote class="blockquote">
-<p><strong>Answer</strong>: Melanoma is the most aggressive form of skin cancer, originating from melanocytes in the epidermis.Incidence has risen sharply over recent decades. This is increase in incidence is particularly in fair-skinned populations, this makes being fair-skinned a major risk factor(Culp MB et al., 2019). Another major risk factor is exposure to high levels of ultraviolet radiation. Epidemiological data show that melanoma is more common in individuals with lighter skin, a history of sunburns especially before the age of 20, numerous or atypical nevi, and a family history of melanoma, and age(Culp MB et al., 2019). Other risk factors include immunosuppression, indoor tanning, and genetic mutations such as CDKN2A and BRAF. While early detection has improved outcomes, concerns about overdiagnosis continues to be problematic. Currently, incidence continues to rise without a proportional increase in mortality. In the U.S., melanoma is more prevalent among non Hispanic whites and adults over the age of 50 years and is rare in children less than 15 years of age. Men overall show higher mortality rates. Based on lifetime risk statistics, White individuals have a melanoma risk ratio of approximately 26 to 1 compared to Black individuals. This is calculated using the American Cancer Society’s lifetime risk figures of 1 in 38 for White people and 1 in 1,000 for Black people (Culp MB et al., 2019). The most commonly reported histologic subtypes include superficial spreading melanoma, nodular melanoma, lentigo maligna melanoma, acral lentiginous melanoma, and desmoplastic melanoma. For surveillance and coding, melanoma is classified under ICD-O-3 histology codes: Histology codes 8720–8799 with behavior codes 2 (in situ) or 3 (malignant) (Zabor et al., 2021). Primary site codes for the skin C44.0–C44.7 are also during surveillance(Zabor et al., 2021). These codes encompass the major subtypes of melanoma and are used in cancer registries and epidemiological studies to track disease patterns and outcomes. This lab I did not include the histologic subtypes but did the primary sites. The primary sites were categorized based on primary site codes by atomical site as: head and neck, trunk, arms (shoulder to finger), or legs (hip to toes).</p>
-</blockquote>
+<section id="learning-objectives" class="level1">
+<h1>Learning Objectives</h1>
+<ul>
+<li>Determine the appropriate ICD codes, histologic codes, and any relevant subtypes of a cancer.</li>
+<li>Utilize SEER*Stat to access data from the SEER cancer registry.</li>
+<li>Visualize cancer incidence and trends by sex, race, and cancer subtype.</li>
+</ul>
 </section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2</h2>
-<p>If you do not have a laptop capable of running SEER*Stat, share with a friend or join the queue for the laptop that I’ve brought.</p>
-<p>Following the lecture slides, access age-adjusted rates for your cancer of interest by sex, race, and cancer subtype. Use the most recent data from SEER 8 (1975-), SEER 12 (1992-), SEER 17 (2000-) or SEER 22 (2000-). If you’ve picked a more common cancer, you can use a longer time series. If you’ve picked a less common cancer, you can use one of the larger collections with a shorter period. If you’re not sure which to use, you can try them all and see!</p>
-<p><strong>Be sure to save your session so that you can access or edit it in the future.</strong></p>
-<p><strong>Also, save yourself some work for Lab 6 and now download a version of the data that also include the age at diagnosis variable as a Page variable.</strong></p>
-<p>Read your .csv file into R. It’ll need a little cleaning. Here’s the code that I used to clean my cancer data. You will need to make some adjustments for yours.</p>
+<section id="code" class="level1">
+<h1>Code</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -141,11 +129,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a> data<span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"Melanoma.csv"</span>,<span class="at">header=</span><span class="cn">TRUE</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">colnames</span>(data)<span class="ot">=</span><span class="fu">c</span>(<span class="st">"Race"</span>,<span class="st">"Sex"</span>,<span class="st">"Subsite"</span>,<span class="st">"Year"</span>,<span class="st">"Rate"</span>,<span class="st">"Cases"</span>,<span class="st">"Pop"</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># #Remove the year range </span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a> data_melanoma <span class="ot">&lt;-</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(Year <span class="sc">!=</span> <span class="st">"1975-2022"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"Melanoma.csv"</span>,<span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Race"</span>,<span class="st">"Sex"</span>,<span class="st">"Subsite"</span>,<span class="st">"Year"</span>,<span class="st">"Rate"</span>,<span class="st">"Cases"</span>,<span class="st">"Pop"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the year range </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>data_melanoma <span class="ot">&lt;-</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(Year <span class="sc">!=</span> <span class="st">"1975-2022"</span>)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a> </span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Rate <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Rate)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -153,7 +141,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Year <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Year))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># #Example: Subset to the overall</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: Subset to the overall</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data_melanoma_overall <span class="ot">&lt;-</span> data_melanoma <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    Race <span class="sc">==</span> <span class="st">"All races"</span>, </span>
@@ -189,45 +177,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Using ggplot2 in R, create a set of graphs to visualize the age adjusted incidence rates overall, by sex, race, and subtype, and for some combinations. I will not specify a set of graphs, so it is up to you to concisely tell a story. Do not simply dump a separate graph for each combination of sex, race, and subtype; consider carefully which subgroups should be compared on the same graph vs should be displayed in separate graphs. It will help to think about the epidemiology of your cancer: Which is the most important covariate? For which groups might there be disparities that are important to consider?</p>
-<p>Maybe sex for each subtype or race for each subtype think about if i were preparing a report, to convye the important information. whats the most improtant covariate where are the disparities</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># age adjusted incidence rates by sex</span></span>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Age-adjusted incidence rates by sex</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Rate <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Rate)) </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Year <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Year)) </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for relevant subsites and races, but keep Sex as a variable</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>data_melanoma_by_sex <span class="ot">&lt;-</span> data_melanoma <span class="sc">|&gt;</span> </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    Race <span class="sc">==</span> <span class="st">"All races"</span>,</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    Sex <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    Subsite <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Head and Neck Anatomic site of Melanoma"</span>,</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Trunk Anatomic site of Melanoma"</span>,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Arm (shoulder to finger) Anatomic site of Melanoma"</span>,</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Leg (hip to toe) Anatomic site of Melanoma"</span> ))  <span class="sc">%&gt;%</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Year, Rate, Sex, Cases, Pop)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by Year and Sex</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a> data_melanoma_by_sex_summary <span class="ot">=</span> data_melanoma_by_sex <span class="sc">%&gt;%</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year, Sex) <span class="sc">%&gt;%</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_cases =</span> <span class="fu">sum</span>(Cases, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_rate =</span> <span class="fu">sum</span>(Rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot age-adjusted incidence rates by sex</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_melanoma_by_sex_summary, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> total_rate, <span class="at">color =</span> Sex)) <span class="sc">+</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Age-Adjusted Melanoma Incidence Rates by Sex (1975–2022)"</span>,</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average Rate per 100,000"</span>, <span class="at">color =</span> <span class="st">"Sex"</span>) <span class="sc">+</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1975</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Rate <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Rate)) </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Year)) </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for relevant subsites and races, but keep Sex as a variable</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>data_melanoma_by_sex <span class="ot">&lt;-</span> data_melanoma <span class="sc">|&gt;</span> </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    Race <span class="sc">==</span> <span class="st">"All races"</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    Sex <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    Subsite <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Head and Neck Anatomic site of Melanoma"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Trunk Anatomic site of Melanoma"</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Arm (shoulder to finger) Anatomic site of Melanoma"</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Leg (hip to toe) Anatomic site of Melanoma"</span> ))  <span class="sc">%&gt;%</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Year, Rate, Sex, Cases, Pop)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by Year and Sex</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a> data_melanoma_by_sex_summary <span class="ot">&lt;-</span> data_melanoma_by_sex <span class="sc">%&gt;%</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year, Sex) <span class="sc">%&gt;%</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_cases =</span> <span class="fu">sum</span>(Cases, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_rate =</span> <span class="fu">sum</span>(Rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot age-adjusted incidence rates by sex</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_melanoma_by_sex_summary, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> total_rate, <span class="at">color =</span> Sex)) <span class="sc">+</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Age-Adjusted Melanoma Incidence Rates by Sex (1975–2022)"</span>,</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average Rate per 100,000"</span>, <span class="at">color =</span> <span class="st">"Sex"</span>) <span class="sc">+</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1975</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -237,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># age adjusted incidence rates by race</span></span>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Age-adjusted incidence rates by race</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert columns to numeric</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Rate <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Rate))</span>
@@ -255,7 +240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Leg (hip to toe) Anatomic site of Melanoma"</span> )) <span class="sc">%&gt;%</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Year, Rate, Race, Cases, Pop)</span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by Year and Race</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by year and race</span></span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>data_melanoma_by_race_summary <span class="ot">&lt;-</span> data_melanoma_by_race <span class="sc">|&gt;</span> </span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year, Race) <span class="sc">|&gt;</span> </span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
@@ -282,13 +267,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#age adjusted incidence rates by subsite</span></span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Age-adjusted incidence rates by subsite</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert columns to numeric</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Rate <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Rate))</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Year))</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for relevant races and sexes, but keep Subsite as a variable</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for relevant races and sexes, but keep subsite as a variable</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>data_melanoma_by_subsite <span class="ot">&lt;-</span> data_melanoma <span class="sc">|&gt;</span> </span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    Race <span class="sc">==</span> <span class="st">"All races"</span>,</span>
@@ -300,7 +285,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Leg (hip to toe) Anatomic site of Melanoma"</span>))  <span class="sc">%&gt;%</span></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Year, Rate, Subsite, Cases, Pop)</span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#Rename subsite to a more condensed form for nicer plotting legend</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename subsite to a more condensed form for nicer plotting legend</span></span>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>data_melanoma_by_subsite <span class="ot">&lt;-</span> data_melanoma_by_subsite <span class="sc">|&gt;</span> </span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Subsite =</span> <span class="fu">recode</span>(Subsite,</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Head and Neck Anatomic site of Melanoma"</span> <span class="ot">=</span> <span class="st">"Head/Neck"</span>,</span>
@@ -309,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leg (hip to toe) Anatomic site of Melanoma"</span> <span class="ot">=</span> <span class="st">"Leg"</span>))</span>
 <span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by Year and Subsite</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by year and subsite</span></span>
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>data_melanoma_by_subsite_summary <span class="ot">&lt;-</span> data_melanoma_by_subsite <span class="sc">|&gt;</span> </span>
 <span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year, Subsite) <span class="sc">|&gt;</span> </span>
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
@@ -337,7 +322,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#age adjusted incidence rates by race and sex</span></span>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Age-adjusted incidence rates by race and sex</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter and clean</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Rate <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Rate))</span>
@@ -355,7 +340,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Year, Rate, Race, Sex, Cases, Pop)</span>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by Year and Subsite</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by year and subsite</span></span>
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>data_melanoma_race_sex_summary <span class="ot">&lt;-</span> data_melanoma_race_sex <span class="sc">|&gt;</span> </span>
 <span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year, Race, Sex) <span class="sc">|&gt;</span> </span>
 <span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
@@ -382,7 +367,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># age adjusted incidence rates by race and subsite</span></span>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Age-adjusted incidence rates by race and subsite</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Rate <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Rate))</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>data_melanoma<span class="sc">$</span>Year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(data_melanoma<span class="sc">$</span>Year))</span>
@@ -398,7 +383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Leg (hip to toe) Anatomic site of Melanoma"</span>))  <span class="sc">%&gt;%</span></span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Year, Rate, Race, Subsite, Cases, Pop)</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#Rename subsite to a more condensed form for nicer plotting legend</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename subsite to a more condensed form for nicer plotting legend</span></span>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>data_melanoma_race_subsite <span class="ot">&lt;-</span> data_melanoma_race_subsite <span class="sc">|&gt;</span> </span>
 <span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Subsite =</span> <span class="fu">recode</span>(Subsite,</span>
 <span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Head and Neck Anatomic site of Melanoma"</span> <span class="ot">=</span> <span class="st">"Head/Neck"</span>,</span>
@@ -406,25 +391,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Arm (shoulder to finger) Anatomic site of Melanoma"</span> <span class="ot">=</span> <span class="st">"Arm"</span>,</span>
 <span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leg (hip to toe) Anatomic site of Melanoma"</span> <span class="ot">=</span> <span class="st">"Leg"</span>))  </span>
 <span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by Year and Subsite</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>data_melanoma_race_subsite_summary <span class="ot">&lt;-</span> data_melanoma_race_subsite <span class="sc">|&gt;</span> </span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year, Race, Subsite) <span class="sc">|&gt;</span> </span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_cases =</span> <span class="fu">sum</span>(Cases, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_rate =</span> <span class="fu">sum</span>(Rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot incidence by race and subsite</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_melanoma_race_subsite_summary, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> total_rate, <span class="at">color =</span> Race)) <span class="sc">+</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Subsite) <span class="sc">+</span></span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Melanoma Incidence by Race and Subsite (1975–2022)"</span>,</span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average Rate per 100,000"</span>, <span class="at">color =</span> <span class="st">"Race"</span>) <span class="sc">+</span></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1975</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">10</span>)) <span class="sc">+</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Group and summarize by year and subsite</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>data_melanoma_race_subsite_summary <span class="ot">&lt;-</span> data_melanoma_race_subsite <span class="sc">|&gt;</span> </span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year, Race, Subsite) <span class="sc">|&gt;</span> </span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_cases =</span> <span class="fu">sum</span>(Cases, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_rate =</span> <span class="fu">sum</span>(Rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot incidence by race and subsite</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_melanoma_race_subsite_summary, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> total_rate, <span class="at">color =</span> Race)) <span class="sc">+</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Subsite) <span class="sc">+</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Melanoma Incidence by Race and Subsite (1975–2022)"</span>,</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average Rate per 100,000"</span>, <span class="at">color =</span> <span class="st">"Race"</span>) <span class="sc">+</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1975</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -433,11 +417,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><strong>Q2:</strong> Describe the incidence and trends in your cancer. What are the important heterogeneities by sex, race, and subtype? Does combing subgroups mask trends (e.g., men increasing, women decreasing so flat overall)? How are the trends for sex × race similar or different from what you would expect from the marginal trends? How similar or different are the trends by race and sex across subtypes? Don’t overwhelm me with a data dump and pages upon pages of graphs. Tell a clear and concise story, as if you were preparing a publication with a word and figure limit.</p>
-<blockquote class="blockquote">
-<p><strong>Answer</strong>: The overall incidence and trends of melanoma from 1975 to 2022 is that it has been steadily increasing. In 1975 the overall age adjusted incidence rate was 2.6 per 100,000 persons, in 2022 the overall age adjusted incidence rate was 7.9 per 100,000 person. The upward trend could be due to an increase in screening and better detection methods. An observation to also make on all of the plots is the sharp decrease in 2020. This decrease is due to the COVID-19 pandemic, where routine screening was discouraged for a period of time to prevent the spread of COVID-19. Important heterogeneities we see when we stratifiy by sex is that men have a higher age adjusted incidence rate compare to women. In 1975 men and women have a similar rate, however in 2022 men are just under double that of women for incidences. This is due to the steady increase from around 2010 men keep while women seem to plateu. This is odd due to the trend of tanning beds that occured in the late 1990’s to early 2000’s, where women were more likely to participate in this trend leading to increase exposure to UV light, a known risk factor as stated above. Important heterogeneitites when we stratify by race is that whites have the highest age adjusted rate, with “all races” which contain other races slightly below them. These two races started at a compareable incidence rate, and steadily increase at a pretty comparable slope. However when examiming black incidence rates, there has been very little change from the inital age adjusted rate of 0.5 per 100,000 people to 2022 which was 0.3 per 100,000 people. Another observation is that when looking at all races it isnt that much lower even though black is so drastically low. This indicates that the “other” race has a incidence close to whites. Important heterogeneities when we stratify by subsite is that the anitomical region with the highest incidece is the trunk. This was the case over the 48 year data collection. The three other regions arm, head and neck, and leg, all stay within 4 age adjusted incidence rates of eachother. This is a little surpriseing. Due to clothing the trunk is one of the most overed areas of the body especially in women. Men do tend to not wear shirts while participating in water activities but otherwise a majority of the time are protected from UV light via clothing. I was expecting to see a high rate in arms and head and neck due to the lack of coverage by clothes. When analysing the sex and race plots I feel that the marginal trends are very comparable to joint trends. White women and men have the highest age adjusted rate. One think to notice in these trends is that black males and females are both at incidence rate that are around 0.5 per 100,000 persons, there does not appear to be a significant difference amounst the sexes for black individuals. On graph that I wanted to do was to stratify race and subsite. There are two observations that stuck out to me. 1) the trunk region for whites is by far increasing the fastest and has the highest age adjusted rate 14.7 per 100,000 people in 2015. 2) Looking at the leg region, blacks have douple their incidence from around 0.5 per 100,000 people to around 1.0 per 100,000 people throughout the 48 year period. This is such an interesting finding. The leg region when stratified by only subsite is the lowest region for incidences, however it is the highest for black individuals. This could be due to this part of their body being the most exposed to UV light, or maybe it has something to do with the biology of the melatonin in the skin in that region. This would be an item that needs a more indepth analysis. However when looking at all the trends it is clear that a target population would be most effective in men. Educating them about the potential dangers of sun burns of their trunk region and offering sunscreen could be a potential intervention.</p>
-</blockquote>
-</section>
 </section>
 
 </main>
