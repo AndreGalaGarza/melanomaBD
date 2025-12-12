@@ -6,33 +6,17 @@ format: html
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
 #install.packages("tidyverse")
 ```
 
-In class, we used Joinpoint to assess cancer incidence trends for head and neck cancer. In this lab, you will do the same for a cancer of your choice. You are encouraged to continue to use this cancer in labs throughout the course as your build toward the final project, though you may switch at any time.
 
+# Learning Objectives 
+*	Understand the goals and methods of joinpoint regression.
+*	Utilize the segmented package in R to run joinpoint regression models.
+*	Visualize and summarize cancer incidence and trends by sex, race, and cancer subtype.
 
-**Learning objectives:** 
--	Understand the goals and methods of joinpoint regression.
--	Utilize the segmented package in R to run joinpoint regression models.
--	Visualize and summarize cancer incidence and trends by sex, race, and cancer subtype.
+# Code
 
-
-
-**Task:** Follow the steps outlined below, submit a PDF of our output (render as HTML and print the HTML to PDF) that answers the questions in bold below, including any supporting plots. Also submit your R code, exported data (.dic and .csv).  As with any lab, you may work in groups, but everyone should submit their own response and code, in their own words.
-
-**Criteria:** This assignment will be graded on the correctness and completeness of the answers to the questions and on whether the plots are publication-ready, with easy-to-read text. Use reasonable significant digits (2-3 depending on the scale) when reporting numbers.
-
-
-# Steps
-
-## 1 
-Load in the data that you retrieved from SEER*Stat for your cancer last week. Follow the instructions from lecture to run joinpoint models for your cancer 
-1) overall, 
-2) by sex, race (not including Other or Unknown categories), and subtype, and
-3) for each combination of the levels of at two subgroups (i.e., race and sex, sex and subtype, or race and subtype).
-To get started, you may want to run just for the cancer overall to start with to make sure you understand the code and then come back to do the subgroups.
 ```{r}
 library(tidyverse)
 library(ggplot2)
@@ -91,7 +75,7 @@ AAPC_est = (exp((5*0.003 + 5*0.003)/10) - 1)
 ```
 
 ```{r}
-joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 8) {
+joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 5) {
 
   data_melanoma_filtered <- data_melanoma |> 
     filter(Race == race &
@@ -104,6 +88,9 @@ joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 8) {
 
   # Select the best fit number of joinpoints
   out.glm.best <- selgmented(out.glm, seg.Z = ~ Year, Kmax = kmax, type = "bic", msg = FALSE)
+  if (is.null(out.glm.best) || is.null(out.glm.best$psi) || nrow(out.glm.best$psi) == 0) {
+    return(NULL)
+  }
   
   # Identify joinpoints
   num_breakpoints <- nrow(out.glm.best$psi)
@@ -131,7 +118,9 @@ joinpoint_model <- function(data_melanoma, race, sex, site, kmax = 8) {
     joinpoint_years = joinpoint_years,
     segment_years = segment_years,
     apc = apc,
-    aapc = aapc
+    aapc = aapc,
+    fit = out.glm.best,
+    data = data_melanoma_filtered
   ))
 }
 ```
@@ -142,1257 +131,231 @@ races <- c("All races", "Black", "White")
 sexes <- c("Male and female", "Male", "Female")
 sites <- c("All sites", "Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)")
 
-combos <- c()
+combos_race <- c()
+combos_sex <- c()
+combos_site <- c()
 model_list <- list()
+
+num_breakpoints_list <- c()
+joinpoint_years_list <- list()
+segment_years_list <- list()
+apc_list <- list()
+aapc_list <- list()
 
 for (race in races) {
   for (sex in sexes) {
     for (site in sites) {
-      combo <- paste(race, sex, site, sep = " | ")
       model_obj <- joinpoint_model(data_melanoma, race, sex, site)
-
-      combos <- c(combos, combo)
+      if (is.null(model_obj)) next
+      combos_race <- c(combos_race, race)
+      combos_sex <- c(combos_sex, sex)
+      combos_site <- c(combos_site, site)
       model_list[[length(model_list) + 1]] <- model_obj
+      
+      num_breakpoints_list <- c(num_breakpoints_list, model_obj$num_breakpoints)
+      joinpoint_years_list[[length(joinpoint_years_list) + 1]] <- model_obj$joinpoint_years
+      segment_years_list[[length(segment_years_list) + 1]] <- model_obj$segment_years
+      apc_list[[length(apc_list) + 1]] <- model_obj$apc
+      aapc_list[[length(aapc_list) + 1]] <- model_obj$aapc
     }
   }
 }
 
 models <- data.frame(
-  Combo = combos,
+  Race = combos_race,
+  Sex = combos_sex,
+  Site = combos_site,
+  Num_Breakpoints = num_breakpoints_list,
+  Joinpoint_Years = I(joinpoint_years_list),
+  Segment_Years = I(segment_years_list),
+  APC = I(apc_list),
+  AAPC = I(aapc_list),
   Model = I(model_list),
   stringsAsFactors = FALSE
 )
-
 ```
 
 ```{r}
 models
 ```
 
+
 ```{r}
-# stratified by sex
-
-# Select a data subset (male), incidence of melanoma in male population
-data_melanoma_male = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male" &
-           Site == "All sites")
-
-# Log-linear model (Poisson)
-out.glm_male = glm(Count_adj ~ Year, data= data_melanoma_male, 
-              family=poisson(), offset=log(Population))
-
-# Select the best fit number of joinpoints
-out.glm.best_male= selgmented(out.glm_male, seg.Z = ~ Year, Kmax = 5, type="bic", msg = FALSE)
-summary(out.glm.best_male)
-
-# The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_male, APC=TRUE)
-
-AAPC_est_male_1 = (exp(5*0.012/5) - 1)
-AAPC_est_male_2 = (exp(5*-0.01/5) - 1)
-
-# incidence of melanoma in female population
-data_melanoma_female = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Female" &
-           Site == "All sites")
-
-#Log-linear model (Poisson)
-out.glm_female = glm(Count_adj ~ Year, data= data_melanoma_female, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_female= selgmented(out.glm_female, seg.Z = ~ Year, Kmax = 5, type="bic")
-summary(out.glm.best_female)
-
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_female, APC=TRUE)
-
-AAPC_est_female_1217 = (exp((4*.01449 + 1*-0.0044)/5) - 1)
-
-#plot female, male and overall
-plot.segmented(out.glm.best_female, link=FALSE,
-               ylim=c(0,max(data_melanoma_female$Rate,
-                            data_melanoma_male$Rate,
-                            data_melanoma_overall$Rate)),
-               main = "Age-adjusted incidence of Melanoma Cases
-               by Sex (Male and Female) from 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-                  points(data_melanoma_female$Year,
-                      data_melanoma_female$Rate)
-plot.segmented(out.glm.best_male, link = FALSE, add = TRUE, col="blue")
-points(data_melanoma_male$Year, data_melanoma_male$Rate)
-plot.segmented(out.glm.best, link = FALSE, add = TRUE, col="black")
-points(data_melanoma_overall$Year, data_melanoma_overall$Rate)
-legend("bottomright", 
-       legend = c("Female", "Male", "Overall"), 
-       fill = c("#D55E00","blue","black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-
-
-```
-```{r}
-#Stratified by black and white cases
-
-#Select a data subset (male)
-data_melanoma_black = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male and female" &
-           Site == "All sites")
-
-#Log-linear model (Poisson)
-out.glm_black = glm(Count_adj ~ Year, data= data_melanoma_black, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black= selgmented(out.glm_black, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black, APC=TRUE)
-
-AAPC_est_black = (exp((3*-0.00037 + 2*-0.03985)/5) - 1)
-
-#female
-data_melanoma_white = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male and female" &
-           Site == "All sites")
-
-#Log-linear model (Poisson)
-out.glm_white = glm(Count_adj ~ Year, data= data_melanoma_white, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white= selgmented(out.glm_white, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white, APC=(TRUE))
-
-AAPC_est_white = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)
-
-#plot female, male and overall
-plot.segmented(out.glm.best_black, link=FALSE,
-               ylim=c(0,max(data_melanoma_black$Rate,
-                            data_melanoma_white$Rate,
-                            data_melanoma_overall$Rate)),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (Black and White), 1975-2022",
-               ylab = "Rate per 100000", col = "#D55E00")
-                  points(data_melanoma_black$Year,
-                      data_melanoma_black$Rate)
-plot.segmented(out.glm.best_white, link = FALSE, add = TRUE, col="blue")
-points(data_melanoma_white$Year, data_melanoma_white$Rate)
-plot.segmented(out.glm.best, link = FALSE, add = TRUE, col="black")
-points(data_melanoma_overall$Year, data_melanoma_overall$Rate)
-legend("right", 
-       legend = c("Black", "White", "Overall"), 
-       fill = c("#D55E00","blue","black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-
-```
-```{r}
-#Stratified by anatomical location
-
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_headneck = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male and female" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_headneck = glm(Count_adj ~ Year, data= data_melanoma_headneck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_headneck= selgmented(out.glm_headneck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_headneck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_headneck, APC=TRUE)
-
-AAPC_est_headneck = (exp((4*.010116 + 1*-.0074197)/5) - 1)
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_trunk = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male and female" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_trunk = glm(Count_adj ~ Year, data= data_melanoma_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_trunk= selgmented(out.glm_trunk, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_trunk, APC=TRUE)
-
-#AAPC_est_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_arm = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male and female" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_arm = glm(Count_adj ~ Year, data= data_melanoma_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_arm= selgmented(out.glm_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_arm, APC=TRUE)
-
-AAPC_est_arm = (exp((4*.021558 + 1*-0.010964)/5) - 1)
-
-#
-data_melanoma_leg = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male and female" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_leg = glm(Count_adj ~ Year, data= data_melanoma_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_leg= selgmented(out.glm_leg, seg.Z = ~ Year, Kmax = 4, type="bic")
-
-summary(out.glm.best_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_leg, APC=TRUE)
-
-#AAPC_est_leg = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)
-
-
-ylim_max = max(c(data_melanoma_headneck$Rate,
-                            data_melanoma_trunk$Rate,
-                            data_melanoma_arm$Rate,
-                            data_melanoma_leg$Rate,
-                            data_melanoma_overall$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_headneck, link=FALSE,
-               ylim = c(0,ylim_max*1.3),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Subtype (Anatomical Location), 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-                  #points(data_melanoma_headneck$Year,data_melanoma_headneck$Rate)
-plot.segmented(out.glm.best_trunk, link = FALSE, add = TRUE, col="blue")
-#points(data_melanoma_trunk$Year, data_melanoma_trunk$Rate)
-plot.segmented(out.glm.best_arm, link = FALSE, add = TRUE, col="gold")
-#points(data_melanoma_arm$Year, data_melanoma_arm$Rate)
-plot.segmented(out.glm.best_leg, link = FALSE, add = TRUE, col="purple")
-#points(data_melanoma_leg$Year, data_melanoma_leg$Rate)
-plot.segmented(out.glm.best, link = FALSE, add = TRUE, col="black")
-#points(data_melanoma_overall$Year, data_melanoma_overall$Rate)
-legend("topleft", 
-       legend = c("Head and Neck", "Trunk", "Arm", "Leg", "Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-```
-```{r}
-#Stratified by sex(male and female) and race(black and white)
-
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_black_male = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male" &
-           Site == "All sites")
-
-#Log-linear model (Poisson)
-out.glm_black_male = glm(Count_adj ~ Year, data= data_melanoma_black_male, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_male= selgmented(out.glm_black_male, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_male)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_male, APC=TRUE)
-
-AAPC_est_black_male = (exp((2*-0.004 + 3*-.161)/5) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_white_male = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male" &
-           Site == "All sites")
-
-#Log-linear model (Poisson)
-out.glm_white_male = glm(Count_adj ~ Year, data= data_melanoma_white_male, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_male= selgmented(out.glm_white_male, seg.Z = ~ Year, Kmax = 4, type="bic")
-
-summary(out.glm.best_white_male)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_male, APC=TRUE)
-
-#AAPC_est_white_male = (exp((*-0.0344310 + 5*-0.0036144)/15) - 1)
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_black_female = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Female" &
-           Site == "All sites")
-
-#Log-linear model (Poisson)
-out.glm_black_female = glm(Count_adj ~ Year, data= data_melanoma_black_female, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_female= selgmented(out.glm_black_female, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_female)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_female, APC=TRUE)
-
-AAPC_est_black_female = (exp((3*-.038725 + 2*.144700)/5) - 1)*100
-
-#
-data_melanoma_white_female = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Female" &
-           Site == "All sites")
-
-#Log-linear model (Poisson)
-out.glm_white_female = glm(Count_adj ~ Year, data= data_melanoma_white_female, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_female= selgmented(out.glm_white_female, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_female)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_female, APC=TRUE)
-
-AAPC_est_white_female = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_black_male$Rate,
-                            data_melanoma_white_male$Rate,
-                            data_melanoma_black_female$Rate,
-                            data_melanoma_white_female$Rate,
-                            data_melanoma_overall$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_black_male, link=FALSE,
-               ylim = c(0,ylim_max*1.3),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (Black or White) and Sex (Male or Female), 1975-2022",
-               ylab = "Rate per 100000", col = "#D55E00")
-plot.segmented(out.glm.best_white_male, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_black_female, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_white_female, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best, link = FALSE, add = TRUE, col="black")
-legend("topleft", 
-       legend = c("Black Male", "White Male", "Black Female", "White Female", "Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-```
-```{r}
-#Stratified by sex(male or female) and subsite
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_male_head_neck = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_male_head_neck = glm(Count_adj ~ Year, data= data_melanoma_male_head_neck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_male_head_neck= selgmented(out.glm_male_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_male_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_male_head_neck, APC=TRUE)
-
-AAPC_est_male_head_neck = (exp((3*.0139730 + 2*-0.0077973)/5) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_male_trunk = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_male_trunk = glm(Count_adj ~ Year, data= data_melanoma_male_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_male_trunk= selgmented(out.glm_male_trunk, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_male_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_male_trunk, APC=TRUE)
-
-#AAPC_est_male_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_male_arm = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_male_arm = glm(Count_adj ~ Year, data= data_melanoma_male_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_male_arm= selgmented(out.glm_male_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_male_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_male_arm, APC=TRUE)
-
-#AAPC_est_male_arm = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#
-data_melanoma_male_leg = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_male_leg = glm(Count_adj ~ Year, data= data_melanoma_male_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_male_leg= selgmented(out.glm_male_leg, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_male_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_male_leg, APC=TRUE)
-
-AAPC_est_male_leg = (exp((4*0.0185840 + 1*-0.0068449)/5) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_male_head_neck$Rate,
-                            data_melanoma_male_trunk$Rate,
-                            data_melanoma_male_arm$Rate,
-                            data_melanoma_male_leg$Rate,
-                            data_melanoma_male$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_male_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Sex (Male) and Subtype (Anatomical Location), 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-plot.segmented(out.glm.best_male_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_male_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_male_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_male, link = FALSE, add = TRUE, col="black")
-legend("topleft", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "Male Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-
+get_model <- function(models, race, sex, site) {
+  idx <- which(models$Race == race
+               & models$Sex == sex
+               & models$Site == site)
+  if (length(idx) > 1) {
+    idx <- idx[1]
+  }
+  models$Model[[idx]]
+}
 ```
 
 ```{r}
-#Stratified by sex(felmale) and subsite
+plot_joinpoint_set <- function(model_objs, labels, cols,
+                               main, ylab = "Rate per 100,000") {
+  df_list <- list()
+  for (i in seq_along(model_objs)) {
+    m <- model_objs[[i]]
+    d <- m$data
 
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_female_head_neck = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Female" &
-           Site == "Head and Neck")
+    year_grid <- seq(min(d$Year), max(d$Year), by = 1)
+    pred_rate <- exp(predict(m$fit, newdata = data.frame(Year = year_grid),
+                             type = "link")) * 100000
 
-#Log-linear model (Poisson)
-out.glm_female_head_neck = glm(Count_adj ~ Year, data= data_melanoma_female_head_neck, 
-              family=poisson(), offset=log(Population))
+    df_list[[i]] <- rbind(
+      data.frame(Year = d$Year, Rate = d$Rate, Series = labels[i], Type = "Observed"),
+      data.frame(Year = year_grid, Rate = pred_rate, Series = labels[i], Type = "Fitted")
+    )
+  }
+  plot_df <- do.call(rbind, df_list)
 
-#Select the best fit number of joinpoints
-out.glm.best_female_head_neck= selgmented(out.glm_female_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
+  ylim_max <- max(plot_df$Rate[plot_df$Type == "Fitted"], na.rm = TRUE)
 
-summary(out.glm.best_female_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_female_head_neck, APC=TRUE)
-
-#AAPC_est_female_head_neck = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_female_trunk = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Female" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_female_trunk = glm(Count_adj ~ Year, data= data_melanoma_female_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_female_trunk= selgmented(out.glm_female_trunk, seg.Z = ~ Year, Kmax = 4, type="bic" )
-
-summary(out.glm.best_female_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_female_trunk, APC=TRUE)
-
-AAPC_est_female_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_female_arm = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Female" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_female_arm = glm(Count_adj ~ Year, data= data_melanoma_female_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_female_arm= selgmented(out.glm_female_arm, seg.Z = ~ Year, Kmax = 4, type="bic")
-
-summary(out.glm.best_female_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_female_arm, APC=TRUE)
-
-AAPC_est_female_arm = (exp((2*-0.046377 + 3*.018736)/5) - 1)*100
-
-#
-data_melanoma_female_leg = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Female" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_female_leg = glm(Count_adj ~ Year, data= data_melanoma_female_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_female_leg= selgmented(out.glm_female_leg, seg.Z = ~ Year, Kmax = 3, type="bic")
-
-summary(out.glm.best_female_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_female_leg, APC=TRUE)
-
-AAPC_est_female_leg = (exp((3*-0.0035055 + 2*-0.0205280)/5) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_female_head_neck$Rate,
-                            data_melanoma_female_trunk$Rate,
-                            data_melanoma_female_arm$Rate,
-                            data_melanoma_female_leg$Rate,
-                            data_melanoma_female$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_female_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Sex (Female) and Subtype (Anatomical Location), 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-plot.segmented(out.glm.best_female_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_female_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_female_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_female, link = FALSE, add = TRUE, col="black")
-legend("topleft", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "Female Overall"), 
-       col = c("#D55E00", "blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-
+  ggplot(plot_df, aes(x = Year, y = Rate, group = Series)) +
+    geom_line(data = subset(plot_df, Type == "Fitted"), aes(color = Series), linewidth = 1) +
+    scale_color_manual(values = cols, breaks = labels) +
+    coord_cartesian(ylim = c(0, ylim_max)) +
+    labs(title = main, y = ylab, color = NULL) +
+    theme_minimal()
+}
 ```
 
 ```{r}
-#Stratified by race (white)  and subsite
-
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_white_head_neck = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male and female" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_white_head_neck = glm(Count_adj ~ Year, data= data_melanoma_white_head_neck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_head_neck= selgmented(out.glm_white_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_head_neck, APC=TRUE)
-
-#AAPC_est_white_head_neck = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_white_trunk = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male and female" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_white_trunk = glm(Count_adj ~ Year, data= data_melanoma_white_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_trunk= selgmented(out.glm_white_trunk, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_trunk, APC=TRUE)
-
-AAPC_est_white_trunk = (exp((1*.01727 + 2*-0.051695 + 2*.048353)/5) - 1)*100
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_white_arm = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male and female" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_white_arm = glm(Count_adj ~ Year, data= data_melanoma_white_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_arm= selgmented(out.glm_white_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_arm, APC=TRUE)
-
-#AAPC_est_white_arm = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#
-data_melanoma_white_leg = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male and female" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_white_leg = glm(Count_adj ~ Year, data= data_melanoma_white_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_leg= selgmented(out.glm_white_leg, seg.Z = ~ Year, Kmax = 4, type="bic")
-
-summary(out.glm.best_white_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_leg, APC=TRUE)
-
-#AAPC_est_white_leg = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_white_head_neck$Rate,
-                            data_melanoma_white_trunk$Rate,
-                            data_melanoma_white_arm$Rate,
-                            data_melanoma_white_leg$Rate,
-                            data_melanoma_white$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_white_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (White) and  Subtype (Anatomical Location), 1975-2022",
-               ylab = "Rate per 100000", col = "#D55E00")
-plot.segmented(out.glm.best_white_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_white_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_white_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_white, link = FALSE, add = TRUE, col="black")
-legend("topleft", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "White Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-
-```
-```{r}
-#Stratified by black  and subsite
-
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_black_head_neck = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male and female" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_black_head_neck = glm(Count_adj ~ Year, data= data_melanoma_black_head_neck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_head_neck= selgmented(out.glm_black_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_head_neck, APC=TRUE)
-
-AAPC_est_black_head_neck = (exp((2*.6495 + 3*-0.36723)/5) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_black_trunk = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male and female" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_black_trunk = glm(Count_adj ~ Year, data= data_melanoma_black_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_trunk= selgmented(out.glm_black_trunk, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_trunk, APC=TRUE)
-
-#AAPC_est_black_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_black_arm = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male and female" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_black_arm = glm(Count_adj ~ Year, data= data_melanoma_black_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_arm= selgmented(out.glm_black_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_arm, APC=TRUE)
-
-#AAPC_est_black_arm = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#
-data_melanoma_black_leg = data_melanoma |> 
-  filter(Race == "All races" &
-           Sex == "Male and female" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_black_leg = glm(Count_adj ~ Year, data= data_melanoma_black_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_leg= selgmented(out.glm_black_leg, seg.Z = ~ Year, Kmax = 4, type="bic")
-
-summary(out.glm.best_black_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_leg, APC=TRUE)
-
-#AAPC_est_black_leg = (exp((*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_black_head_neck$Rate,
-                            data_melanoma_black_trunk$Rate,
-                            data_melanoma_black_arm$Rate,
-                            data_melanoma_black_leg$Rate,
-                            data_melanoma_black$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_black_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (Black) and Subtype (Anatomical Location), 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-plot.segmented(out.glm.best_black_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_black_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_black_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_black, link = FALSE, add = TRUE, col="black")
-legend("topleft", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "Black Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-
-```
-```{r}
-#Stratified by black male  and subsite
-
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_black_male_head_neck = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_black_male_head_neck = glm(Count_adj ~ Year, data= data_melanoma_black_male_head_neck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_male_head_neck= selgmented(out.glm_black_male_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_male_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_male_head_neck, APC=TRUE)
-
-#AAPC_est_black_male_head_neck = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_black_male_trunk = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_black_male_trunk = glm(Count_adj ~ Year, data= data_melanoma_black_male_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_male_trunk= selgmented(out.glm_black_male_trunk, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_male_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_male_trunk, APC=TRUE)
-
-#AAPC_est_black_male_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_black_male_arm = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_black_male_arm = glm(Count_adj ~ Year, data= data_melanoma_black_male_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_male_arm= selgmented(out.glm_black_male_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_male_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_male_arm, APC=TRUE)
-
-#AAPC_est_black_male_arm = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#
-data_melanoma_black_male_leg = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Male" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_black_male_leg = glm(Count_adj ~ Year, data= data_melanoma_black_male_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_male_leg= selgmented(out.glm_black_male_leg, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_male_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_male_leg, APC=TRUE)
-
-#AAPC_est_black_male_leg = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_black_male_head_neck$Rate,
-                            data_melanoma_black_male_trunk$Rate,
-                            data_melanoma_black_male_arm$Rate,
-                            data_melanoma_black_male_leg$Rate,
-                            data_melanoma_black_male$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_black_male_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (Black) and Sex (Male) and Subtype, 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-plot.segmented(out.glm.best_black_male_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_black_male_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_black_male_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_black_male, link = FALSE, add = TRUE, col="black")
-legend("topright", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "Black Male Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
+# Stratified by Sex
+m_overall <- get_model(models, "All races", "Male and female", "All sites")
+m_male    <- get_model(models, "All races", "Male", "All sites")
+m_female  <- get_model(models, "All races", "Female", "All sites")
+
+plot_joinpoint_set(
+  list(m_female, m_male, m_overall),
+  labels = c("Female", "Male", "Overall"),
+  cols   = c("#D55E00", "blue", "black"),
+  main   = "Age-adjusted incidence of Melanoma Cases\nby Sex (Male and Female) from 1975-2022"
+)
 ```
 
 ```{r}
-#Stratified by white male  and subsite
+# Stratified by Race
+m_black <- get_model(models, "Black", "Male and female", "All sites")
+m_white <- get_model(models, "White", "Male and female", "All sites")
 
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_white_male_head_neck = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_white_male_head_neck = glm(Count_adj ~ Year, data= data_melanoma_white_male_head_neck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_male_head_neck= selgmented(out.glm_white_male_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_male_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_male_head_neck, APC=TRUE)
-
-#AAPC_est_white_male_head_neck = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_white_male_trunk = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_white_male_trunk = glm(Count_adj ~ Year, data= data_melanoma_white_male_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_male_trunk= selgmented(out.glm_white_male_trunk, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_male_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_male_trunk, APC=TRUE)
-
-#AAPC_est_white_male_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_white_male_arm = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_white_male_arm = glm(Count_adj ~ Year, data= data_melanoma_white_male_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_male_arm= selgmented(out.glm_white_male_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_male_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_male_arm, APC=TRUE)
-
-#AAPC_est_white_male_arm = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#
-data_melanoma_white_male_leg = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Male" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_white_male_leg = glm(Count_adj ~ Year, data= data_melanoma_white_male_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_male_leg= selgmented(out.glm_white_male_leg, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_male_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_male_leg, APC=TRUE)
-
-#AAPC_est_white_male_leg = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_white_male_head_neck$Rate,
-                            data_melanoma_white_male_trunk$Rate,
-                            data_melanoma_white_male_arm$Rate,
-                            data_melanoma_white_male_leg$Rate,
-                            data_melanoma_white_male$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_white_male_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (White) and Sex (Male) and Subtype 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-plot.segmented(out.glm.best_white_male_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_white_male_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_white_male_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_white_male, link = FALSE, add = TRUE, col="black")
-legend("topleft", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "White Male Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-
+plot_joinpoint_set(
+  list(m_black, m_white, m_overall),
+  labels = c("Black", "White", "Overall"),
+  cols   = c("#D55E00", "blue", "black"),
+  main   = "Age-adjusted incidence of Melanoma cases\nby Race (Black and White), 1975-2022"
+)
 ```
-```{r}
-#Stratified by black female  and subsite
-
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_black_female_head_neck = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Female" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_black_female_head_neck = glm(Count_adj ~ Year, data= data_melanoma_black_female_head_neck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_female_head_neck= selgmented(out.glm_black_female_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_female_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_female_head_neck, APC=TRUE)
-
-#AAPC_est_black_female_head_neck = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_black_female_trunk = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Female" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_black_female_trunk = glm(Count_adj ~ Year, data= data_melanoma_black_female_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_female_trunk= selgmented(out.glm_black_female_trunk, seg.Z = ~ Year, Kmax = 8, type="bic")
-
-summary(out.glm.best_black_female_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_female_trunk, APC=TRUE)
-
-#AAPC_est_black_female_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_black_female_arm = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Female" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_black_female_arm = glm(Count_adj ~ Year, data= data_melanoma_black_female_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_female_arm= selgmented(out.glm_black_female_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_female_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_female_arm, APC=TRUE)
-
-#AAPC_est_black_female_arm = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#
-data_melanoma_black_female_leg = data_melanoma |> 
-  filter(Race == "Black" &
-           Sex == "Female" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_black_female_leg = glm(Count_adj ~ Year, data= data_melanoma_black_female_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_black_female_leg= selgmented(out.glm_black_female_leg, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_black_female_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_black_female_leg, APC=TRUE)
-
-#AAPC_est_black_female_leg = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_black_female_head_neck$Rate,
-                            data_melanoma_black_female_trunk$Rate,
-                            data_melanoma_black_female_arm$Rate,
-                            data_melanoma_black_female_leg$Rate,
-                            data_melanoma_black_female$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_black_female_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (Black) and Sex (Female) and Subtype, 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-plot.segmented(out.glm.best_black_female_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_black_female_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_black_female_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_black_female, link = FALSE, add = TRUE, col="black")
-legend("topright", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "Black Female Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
-```
-
 
 ```{r}
+# Stratified by anatomical location (Site)
+m_headneck <- get_model(models, "All races", "Male and female", "Head and Neck")
+m_trunk    <- get_model(models, "All races", "Male and female", "Trunk")
+m_arm      <- get_model(models, "All races", "Male and female", "Arm (shoulder to finger)")
+m_leg      <- get_model(models, "All races", "Male and female", "Leg (hip to toe)")
 
-#Stratified by white female  and subsite
-
-#Select a data subset. Incidence of melanoma of head and neck cases
-data_melanoma_white_female_head_neck = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Female" &
-           Site == "Head and Neck")
-
-#Log-linear model (Poisson)
-out.glm_white_female_head_neck = glm(Count_adj ~ Year, data= data_melanoma_white_female_head_neck, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_female_head_neck= selgmented(out.glm_white_female_head_neck, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_female_head_neck)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_female_head_neck, APC=TRUE)
-
-#AAPC_est_white_female_head_neck = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-##Select a data subset. Incidence of melanoma of trunk cases
-data_melanoma_white_female_trunk = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Female" &
-           Site == "Trunk")
-
-#Log-linear model (Poisson)
-out.glm_white_female_trunk = glm(Count_adj ~ Year, data= data_melanoma_white_female_trunk, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_female_trunk= selgmented(out.glm_white_female_trunk, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_female_trunk)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_female_trunk, APC=TRUE)
-
-#AAPC_est_white_female_trunk = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#Select a data subset. Incidence of melanoma of arm cases
-data_melanoma_white_female_arm = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Female" &
-           Site == "Arm (shoulder to finger)")
-
-#Log-linear model (Poisson)
-out.glm_white_female_arm = glm(Count_adj ~ Year, data= data_melanoma_white_female_arm, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_female_arm= selgmented(out.glm_white_female_arm, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_female_arm)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_male_arm, APC=TRUE)
-
-#AAPC_est_white_male_arm = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-#
-data_melanoma_white_female_leg = data_melanoma |> 
-  filter(Race == "White" &
-           Sex == "Female" &
-           Site == "Leg (hip to toe)")
-
-#Log-linear model (Poisson)
-out.glm_white_female_leg = glm(Count_adj ~ Year, data= data_melanoma_white_female_leg, 
-              family=poisson(), offset=log(Population))
-
-#Select the best fit number of joinpoints
-out.glm.best_white_female_leg= selgmented(out.glm_white_female_leg, seg.Z = ~ Year, Kmax = 5, type="bic")
-
-summary(out.glm.best_white_female_leg)
-#The relevant break points at 1984, 1995, and 2005
-slope(out.glm.best_white_female_leg, APC=TRUE)
-
-#AAPC_est_white_female_leg = (exp((10*-0.0344310 + 5*-0.0036144)/15) - 1)*100
-
-
-ylim_max = max(c(data_melanoma_white_female_head_neck$Rate,
-                            data_melanoma_white_female_trunk$Rate,
-                            data_melanoma_white_female_arm$Rate,
-                            data_melanoma_white_female_leg$Rate,
-                            data_melanoma_white_female$Rate),na.rm = TRUE)
-
-plot.segmented(out.glm.best_white_female_head_neck, link=FALSE,
-               ylim = c(0,ylim_max),
-               main = "Age-adjusted incidence of Melanoma cases
-               by Race (White) and Sex (Female) and Subtype, 1975-2022",
-               ylab = "Rate per 100,000", col = "#D55E00")
-plot.segmented(out.glm.best_white_female_trunk, link = FALSE, add = TRUE, col="blue")
-plot.segmented(out.glm.best_white_female_arm, link = FALSE, add = TRUE, col="gold")
-plot.segmented(out.glm.best_white_female_leg, link = FALSE, add = TRUE, col="purple")
-plot.segmented(out.glm.best_white_female, link = FALSE, add = TRUE, col="black")
-legend("topleft", 
-       legend = c("Head and Neck", "Trunk", "Arm (shoulder to finger", "Leg (hip to toe", "White Female Overall"), 
-       col = c("#D55E00","blue", "gold", "purple", "black"),
-       lwd = 2,
-       lty = rep(1, 5),
-       bty = "n",
-       cex = 0.85,
-       inset = c(0.01,0.01))
+plot_joinpoint_set(
+  list(m_headneck, m_trunk, m_arm, m_leg, m_overall),
+  labels = c("Head and Neck", "Trunk", "Arm", "Leg", "Overall"),
+  cols   = c("#D55E00", "blue", "gold", "purple", "black"),
+  main   = "Age-adjusted incidence of Melanoma cases\nby Subtype (Anatomical Location), 1975-2022"
+)
 ```
 
-**Q1:** Write a short report describing your results, comparing and contrasting the observed trends across demographic groups and subtypes. This report should include the following:
+```{r}
+# Stratified by Race (Black/White) and Sex (Male/Female)
+m_black_male    <- get_model(models, "Black", "Male", "All sites")
+m_white_male    <- get_model(models, "White", "Male", "All sites")
+m_black_female  <- get_model(models, "Black", "Female", "All sites")
+m_white_female  <- get_model(models, "White", "Female", "All sites")
 
-- A table of joinpoint results for each sex x race group overall and for each subtype. If you have more than 12 combinations of groups (the default is 11), you can focus on a reasonable subset of groups. In this table, your rows will be joinpoint intervals for each group and columns will indicate joinpoint trend periods and APCs (if log-scale) or slopes (if analyses in actual scale). Highlight trends (APCs) statistically significant from zero. Include AAPCs for the last two 5-year periods for each demographic group above. 
+plot_joinpoint_set(
+  list(m_black_male, m_white_male, m_black_female, m_white_female, m_overall),
+  labels = c("Black Male", "White Male", "Black Female", "White Female", "Overall"),
+  cols   = c("#D55E00", "blue", "gold", "purple", "black"),
+  main   = "Age-adjusted incidence of Melanoma cases\nby Race (Black or White) and Sex (Male or Female), 1975-2022"
+)
+```
 
+```{r}
+# Stratified by Sex (Male) and Site
+m_male_headneck <- get_model(models, "All races", "Male", "Head and Neck")
+m_male_trunk    <- get_model(models, "All races", "Male", "Trunk")
+m_male_arm      <- get_model(models, "All races", "Male", "Arm (shoulder to finger)")
+m_male_leg      <- get_model(models, "All races", "Male", "Leg (hip to toe)")
 
-| Group     | Periods | APC | p-value | AAPC 2010-2014 | AAPC 2015-2020|
-| --- | --- | --- | --- | --- | --- |
-| Black Men  |1975-1982 | 0.4 | 0.25 | 4.7 | -2.3 |
-| | 1982-2013 | | | | |
-| | 2013-2019 | | | | |
-  
+plot_joinpoint_set(
+  list(m_male_headneck, m_male_trunk, m_male_arm, m_male_leg, m_male),
+  labels = c("Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)", "Male Overall"),
+  cols   = c("#D55E00", "blue", "gold", "purple", "black"),
+  main   = "Age-adjusted incidence of Melanoma cases\nby Sex (Male) and Subtype (Anatomical Location), 1975-2022"
+)
+```
 
+```{r}
+# Stratified by Sex (Female) and Site
+m_female_headneck <- get_model(models, "All races", "Female", "Head and Neck")
+m_female_trunk    <- get_model(models, "All races", "Female", "Trunk")
+m_female_arm      <- get_model(models, "All races", "Female", "Arm (shoulder to finger)")
+m_female_leg      <- get_model(models, "All races", "Female", "Leg (hip to toe)")
 
-- Figures showing the age-adjusted rates and the joinpoint lines for each demographic group for the cancer overall and for the subtypes that you modeled. These may be made with plot.segmented() using base R plots. Also an optional challenge, you can generate these figures using ggplot2.
+plot_joinpoint_set(
+  list(m_female_headneck, m_female_trunk, m_female_arm, m_female_leg, m_female),
+  labels = c("Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)", "Female Overall"),
+  cols   = c("#D55E00", "blue", "gold", "purple", "black"),
+  main   = "Age-adjusted incidence of Melanoma cases\nby Sex (Female) and Subtype (Anatomical Location), 1975-2022"
+)
+```
 
+```{r}
+# Stratified by Race (White) and Site
+m_white_headneck <- get_model(models, "White", "Male and female", "Head and Neck")
+m_white_trunk    <- get_model(models, "White", "Male and female", "Trunk")
+m_white_arm      <- get_model(models, "White", "Male and female", "Arm (shoulder to finger)")
+m_white_leg      <- get_model(models, "White", "Male and female", "Leg (hip to toe)")
 
-**Answer**:
-Introduction and Method
-This report analyzes joinpoint regressions of age-adjusted melanoma skin cancer incidences cases in the United States from the years 1975 to 2022. This data was obtained from the Seer database. The analysis was of period trends of the following demographics: race (black, white), sex (male, female), and anatomical location which we refer to as a subsite in this report. The subsites were cancers of the skin found in the following: head and neck, trunk, arm (shoulder to finger), and leg (hip to toe). The joinpoint regressions were fitted using a Poisson general linear regression. This provided log-linear models with annual percent changes (APC) as the slope of their segments. The best fit segments were found using a package in R with a set max of 5 joinpoints.  The average annual percent change was also calculated for the two most recent 5-year periods (2012–2016 and 2017–2022). These calculations and statistics were compiled into tables that are in this report along with plots of the demographics fitted individually and in combinations. 
+plot_joinpoint_set(
+  list(m_white_headneck, m_white_trunk, m_white_arm, m_white_leg,
+       get_model(models, "White", "Male and female", "All sites")),
+  labels = c("Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)", "White Overall"),
+  cols   = c("#D55E00", "blue", "gold", "purple", "black"),
+  main   = "Age-adjusted incidence of Melanoma cases\nby Race (White) and Subtype (Anatomical Location), 1975-2022"
+)
+```
 
-Results and Discussion
-The following plots are the log-linear joinpoint regression models for overall, demographics stratified by race, sex, and anatomical location individually. Each plot and table is labeled. For the rest of this document when incidence is used it is the age-adjusted incidence, APC means annual percent change, subsite will be referring to anatomical location, H&N will be used for head and neck, and incidences mean per 100,000 people. The points were removed from the plots after the first three plots due to the models being to close and undifferentiable. The “p-value” column was removed from the tables due to all the p-values being a very small number less than .05, therefore all being statistically significant. 
+```{r}
+# Stratified by Race (Black) and Site
+m_black_headneck <- get_model(models, "Black", "Male and female", "Head and Neck")
+m_black_trunk    <- get_model(models, "Black", "Male and female", "Trunk")
+m_black_arm      <- get_model(models, "Black", "Male and female", "Arm (shoulder to finger)")
+m_black_leg      <- get_model(models, "Black", "Male and female", "Leg (hip to toe)")
 
-![Table 1 Joinpoint Trends Individual](Melanoma Jointpoint Table.png "Table 1")
+plot_joinpoint_set(
+  list(m_black_headneck, m_black_trunk, m_black_arm, m_black_leg,
+       get_model(models, "Black", "Male and female", "All sites")),
+  labels = c("Head and Neck", "Trunk", "Arm (shoulder to finger)", "Leg (hip to toe)", "Black Overall"),
+  cols   = c("#D55E00", "blue", "gold", "purple", "black"),
+  main   = "Age-adjusted incidence of Melanoma cases\nby Race (Black) and Subtype (Anatomical Location), 1975-2022"
+)
+```
 
-The following results were observed when comparing plots and the table. The overall age-adjusted incidence of melanoma cases is increasing with time. This trend has a steady increasing APC until around 2010 when the APC drops from 2.9 % to 0.3% staying at 0.3 % until 2022, which is the end of our data.
-Men have almost twice as high incidence than women starting around 2005 through 2022, despite starting in1975 with similar incidences. 
-Whites have a much higher incidence rate than blacks. This gap has increases substantially from the beginning to where the gap was around 10 incidences, to approximately 40 between 2009-2022. If you look at our table the APC’s of blacks fluctuate with large negative percentages. This is where you need a plot to compare. If you just looked at the table, blacks were decreasing their incidences drastically -30.3% compared to whites increasing “slowly” 5.5%. But when looking at the plot you notice that black had very low incidence around 1 or 2 cases to begin with therefore decreasing 1 case annual might drop the APC 50%. This is a noticeable theme in the results for black men and women.  
-The incidence of the subsites was all under 10 incidences per year, with trunk showing high APC of 6.1%, 8.1% and 3.8% all before 2006. Arm, and H&N have corresponding APC equally out to them being undifferentiable until around 2000. Leg has the lowest incidence and the mildest APC. All the leg APC stay below 3.7%.                  
-![Table 2. Joinpoint Trends Combinations](Melanoma Jointpoint Table Combined.png "Table 2")
-
-When comparing our combination demographics, you really start to see the difference in race and sex and location of melanoma.
-The first plot and four rows of our second table stratify race and sex. The trends are that white men have that highest incidence and then white women. If you look at the APC you will notice that white men and women start off with an APC of 5.8% and 5% from 1975-1983. Then women decrease to 2% and men stay at 3.9% until 1995. Both the black men and female population still have extreme APC and very low incidences; this was already discussed.
-Next, we look at the plots of men stratified by subsite. Men have a high APC for all the subsites to start, with trunk being the highest at 7.4% then 5% for the first 10 years. Also noticing an odd value is that H&N APC from 1985-1998 was .35% that is really low for quite a bit of time. The lowest incidence was the leg subsite with the APC never going over 4.8%.
-Looking at women stratified by subsite there the three subsites trunk, arm and leg look to be converging per the plot with the APC’s confirming this due to the similar numbers in these three strata. The site that is different from the rest is H&N. This incidence is low with low APC’s for the last 10 years the average annual percentage was 0.6% this means this location is holding steady. This is an odd finding to me due to the location of the head and neck on the body.  I would think that the face would have a high incidence compared to the leg.
-The next plot and table rows that is analyzed is the black race stratified by subsite. This is super interesting, blacks have a 3 to 6 times higher incidence of melanoma at subsite leg than any other subsite, which incidence is close to zero. This was the factor driving our female leg incidence up, however, was unnoticeable in the male subsite due to the strong presence of trunk incidence. This information is and curiosity lead me to run plots stratifying all sex by race and subsite, which I included in this report, but did not provide a table of the statistics. An observation is also that trunk and arm both achieved best fit with fewer than 5 joinpoints. Trunk only had one join point at 1986 which had the APC change from 9.5% to 0.1% then stay at 0.1%. This would require a little more research to find out what caused it. This will be investigated and reported in future labs.
-The last group is white stratified by subsite. This plot and joinpoint table is pretty similar to the plot and table of just the subsites. This is due to the white race dominating the regressions due to the unequal distribution of incidence among races.
-One additional observation I want to mention is the consistent decrease in incidence in the AAPC’s for the last two five year periods. These AAPC were consistently either a very low rate usually <1% or a negative rate < 0%. This observation was made in previous labs where around there are noticeable dips in the incidences around 2020. A theory that I have is that the pandemic that occurred from the beginning of 2020 to 2022 caused a decrease in incidence of melanoma. This could be for several reasons, not going to the doctor, not going outside, people dying of covid and not getting checked for melanoma. To further investigate this we would need to obtain the data post the pandemic, which is still being compiled.
+# Appendix: All Model Output
+```{r}
+for (i in seq_len(nrow(models))) {
+  cat("\n=======================\n")
+  cat("Row:", i, "\n")
+  cat("Race:", models$Race[i], "\n")
+  cat("Sex:", models$Sex[i], "\n")
+  cat("Site:", models$Site[i], "\n")
+  cat("Num_Breakpoints:", models$Num_Breakpoints[i], "\n")
+  cat("Joinpoint_Years:", paste(models$Joinpoint_Years[[i]], collapse = ", "), "\n")
+  cat("Segment_Years:\n")
+  print(models$Segment_Years[[i]])
+  cat("APC:\n")
+  print(models$APC[[i]])
+  cat("AAPC:\n")
+  print(models$AAPC[[i]])
+}
+```
