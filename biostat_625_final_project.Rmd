@@ -9,7 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<<<<<<< HEAD
 ### Abstract
+=======
+# Abstract
+>>>>>>> 2aca915491af16fcbfc1d679313cd982eafacd32
 Melanoma incidence has increased substantially in the United States over recent decades, with pronounced disparities by race, sex, and anatomical site. Using Surveillance, Epidemiology, and End Results (SEER) data from 1975–2022, we examined trends in melanoma incidence and survival among Black and White populations. Log-linear regression and joinpoint regression were used to characterize incidence patterns over time by race, sex, and subsite while survival and Cox proportional hazards models evaluated disparities in mortality while accounting for competing risks. Incidence increased steadily overall which was mainly driven by White populations and males with minimal change among Black individuals. Trunk melanoma exhibited the highest incidence and early annual percent increases while leg melanoma showed distinct patterns among Black patients. Survival analyses revealed higher cumulative melanoma mortality among Black patients in men, but these disparities were substantially decreased after adjusting for stage and other covariates. Together, these findings suggest that observed survival disparities are largely explained by differences in stage at diagnosis rather than actual differences in prognosis which demonstrates the importance of earlier detection and targeted public health messaging for underserved populations.
 
 ### Introduction
@@ -30,12 +34,17 @@ For this project, a variety of regression methods were used on a series of SEER 
 
 The annual percent change (APC) and average annual percent change (AAPC) were also computed from the segment slopes. These calculations and statistics were compiled into tables, along with line plots of the demographics fitted individually and in combinations.
 
+<<<<<<< HEAD
 **Survival Regression:** For the survival regression investigation, the variables from the SEER data were recoded into factors such as age groups, race, sex, subsite, and year of diagnosis, as well as the stage of the cancer and event type as a competing risks outcome with 3 states: "Cancer death", "Other death", and "Alive". The survfit() package from the survival library was utilized to get state occupation probabilities over time, to find the probability that a person is alive at time 't' or the cumulative incidence that they have died by cancer or other means at that time. This workflow is repeated to plot the fraction of deaths from cancer over time, stratified by sex, race, age group, stage, and subsite. The follow-up is administratively censored at 5 years (t = 5)  by setting the event to "Alive" automatically if t > 5. Finally, Cox proportional hazards models were computed for each covariate in three different model types: univariable, bivariable (with stage), and multivariable (all covariates).
 
 ### Results
 **Log-Linear Regression:**
 
 ![**Figure 1:** The age-adjusted average yearly incidence rates of melanoma in the United states from 1975 to 2022, plotted by subsite.](linear-log_plot.png){width=50% height=50%}
+=======
+## Survival Regression
+For the survival regression investigation, the variables from the SEER data were recoded into factors such as age groups, race, sex, subsite, and year of diagnosis, as well as the stage of the cancer and event type as a competing risks outcome with 3 states: "Cancer death", "Other death", and "Alive". The survfit() package from the survival library was utilized to get state occupation probabilities over time, to find the probability that a person is alive at time 't' or the cumulative incidence that they have died by cancer or other means at that time. This workflow is repeated to plot the fraction of deaths from cancer over time, stratified by sex, race, age group, stage, and subsite. The follow-up is administratively censored at 5 years (t = 5)  by setting the event to "Alive" automatically if t > 5. Finally, Cox proportional hazards models were computed for each covariate in three different model types: univariable, bivariable (with stage), and multivariable (all covariates).
+>>>>>>> 2aca915491af16fcbfc1d679313cd982eafacd32
 
 The overall incidence and trends of melanoma from 1975 to 2022 is that it has been steadily increasing. In 1975, the overall age-adjusted incidence rate was 2.6 per 100,000 people; in 2022, the overall age adjusted incidence rate was 7.9 per 100,000 people. The line plots below show the average melanoma incidence rate per 100,000 cases stratified by both race (all races, Black, White) and sex (male, female), then by both race and subsite (arm, head/neck, leg, trunk).
 
@@ -61,7 +70,11 @@ In the cumulative incidence plots, most strata have a low incidence of below 0.1
 
 For the Cox models after adjustment, for the >=70 age group, the hazard ratio (HR) dropped from 3.27 (crude) to 1.53 (full), suggesting strong confounding by other factors. Similarly, for Black race, HR dropped from 2.07 to 1.18, and for the head/neck subsite, HR dropped from 1.62 to 1.00. The full table of HRs and p-values across the model types can be seen in our GitHub repository.
 
+<<<<<<< HEAD
 ### Conclusion
+=======
+# Conclusion
+>>>>>>> 2aca915491af16fcbfc1d679313cd982eafacd32
 This study demonstrates that melanoma incidence in the United States has risen significantly since the mid-1970s, with increases concentrated among White individuals and males, while incidence among Black individuals has remained low and relatively stable. Joinpoint analyses indicate that the incidence has increased more slowly after approximately 2010 which suggests that there have been recent changes in detection practices or population risk. Despite their lower incidence, Black patients experience disproportionately worse melanoma outcomes which are reflected by their higher cumulative cancer mortality. However, survival regression results show that much of this disparity is explained by later stage at diagnosis and other clinical factors since the hazard ratios for Black race and head/neck subsites tend towards the null after adjustment. These findings highlight that melanoma disparities are driven less by biological differences and more by inequities in early detection and diagnosis. Public health efforts should therefore prioritize culturally inclusive education and improved access to timely dermatologic care to reduce preventable mortality targeting this particular population.
 
 ### References
