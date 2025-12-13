@@ -187,26 +187,26 @@ mycolors <- magma
 DATA_ci_sex <- matrix(NA,nrow=(length(df_sex$strata)+sum(df_sex$strata)),ncol=4)
 # x
 DATA_ci_sex[,1] <- c(0,df_sex$time[1:df_sex$strata[1]],
-           0,df_sex$time[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2]))])
+           0, df_sex$time[(1 + df_sex$strata[1]):(sum(df_sex$strata[1:2]))])
 # y
 DATA_ci_sex[,2] <- c(0,df_sex$pstate[1:df_sex$strata[1],2],
-           0,df_sex$pstate[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
+           0, df_sex$pstate[(1 + df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
 # 95% CI (lower bound)
 DATA_ci_sex[,3] <- c(0,df_sex$lower[1:df_sex$strata[1],2],
-           0,df_sex$lower[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
+           0, df_sex$lower[(1 + df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
 # 95% CI (upper bound)
 DATA_ci_sex[,4] <- c(0,df_sex$upper[1:df_sex$strata[1],2],
-           0,df_sex$upper[(1+df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
+           0, df_sex$upper[(1 + df_sex$strata[1]):(sum(df_sex$strata[1:2])),2])
 DATA_ci_sex <- as.data.frame(DATA_ci_sex)
 colnames(DATA_ci_sex) <- c("x","y","ymin","ymax")
 breaks <- which(c(DATA_ci_sex$x,0)==0)[-1]
-DATA_ci_sex$sex <- c(rep("Female",df_sex$strata[1]+1),rep("Male",df_sex$strata[2]+1))
+DATA_ci_sex$sex <- c(rep("Female",df_sex$strata[1] + 1),rep("Male",df_sex$strata[2] + 1))
 DATA_ci_sex$sex <- factor(DATA_ci_sex$sex,levels=levels(data$sex))
 
 # In this plot, we have two groups, so it gets busy to also show other
 # cause deaths. We drop them from this plot.
-plot_sex <- ggplot(data=DATA_ci_sex,aes(x = x, y = y, ymin = ymin, ymax = ymax, color = sex)) +
-  scale_color_manual(values=mycolors(3)[-3],name ="Sex") +
+plot_sex <- ggplot(data = DATA_ci_sex,aes(x = x, y = y, ymin = ymin, ymax = ymax, color = sex)) +
+  scale_color_manual(values = mycolors(3)[-3],name ="Sex") +
   geom_ribbon(aes(fill = sex, linetype = NA), alpha = 0.25, show.legend=FALSE) +
   geom_line(linewidth = 0.75) +
   scale_fill_manual(guide = "none", values = mycolors(3)[-3]) +
@@ -235,63 +235,63 @@ df_re <- sf_race_eth
 # Create a data matrix with the correct number of rows:
 # A 0 for each group plus the sum of the number of rows for each subgroup.
 # Drop "unknown" race.
-DATA_ci_re=matrix(NA,nrow=(5+sum(df_re$strata[1:5])),ncol=4)
+DATA_ci_re=matrix(NA, nrow=(5 + sum(df_re$strata[1:5])), ncol=4)
 # x
-DATA_ci_re[,1]=c(0,df_re$time[1:df_re$strata[1]],
-           0,df_re$time[(1+df_re$strata[1]):(sum(df_re$strata[1:2]))],
-           0,df_re$time[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3]))],
-           0,df_re$time[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4]))],
-           0,df_re$time[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5]))])
+DATA_ci_re[,1]=c(0, df_re$time[1:df_re$strata[1]],
+           0, df_re$time[(1 + df_re$strata[1]):(sum(df_re$strata[1:2]))],
+           0, df_re$time[(1 + sum(df_re$strata[1:2])):(sum(df_re$strata[1:3]))],
+           0, df_re$time[(1 + sum(df_re$strata[1:3])):(sum(df_re$strata[1:4]))],
+           0, df_re$time[(1 + sum(df_re$strata[1:4])):(sum(df_re$strata[1:5]))])
 # y
-DATA_ci_re[,2]=c(0,df_re$pstate[1:df_re$strata[1],2],
-           0,df_re$pstate[(1+df_re$strata[1]):(sum(df_re$strata[1:2])),2],
-           0,df_re$pstate[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
-           0,df_re$pstate[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
-           0,df_re$pstate[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
+DATA_ci_re[,2]=c(0, df_re$pstate[1:df_re$strata[1],2],
+           0, df_re$pstate[(1 + df_re$strata[1]):(sum(df_re$strata[1:2])),2],
+           0, df_re$pstate[(1 + sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
+           0, df_re$pstate[(1 + sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
+           0, df_re$pstate[(1 + sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
 # 95% CI (lower bound)
 DATA_ci_re[,3]=c(0,df_re$lower[1:df_re$strata[1],2],
-           0,df_re$lower[(1+df_re$strata[1]):(sum(df_re$strata[1:2])),2],
-           0,df_re$lower[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
-           0,df_re$lower[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
-           0,df_re$lower[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
+           0, df_re$lower[(1 + df_re$strata[1]):(sum(df_re$strata[1:2])),2],
+           0, df_re$lower[(1 + sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
+           0, df_re$lower[(1 + sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
+           0, df_re$lower[(1 + sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
 # 95% CI (upper bound)
 DATA_ci_re[,4]=c(0,df_re$upper[1:df_re$strata[1],2],
-           0,df_re$upper[(1+df_re$strata[1]):(sum(df_re$strata[1:2])),2],
-           0,df_re$upper[(1+sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
-           0,df_re$upper[(1+sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
-           0,df_re$upper[(1+sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
+           0, df_re$upper[(1 + df_re$strata[1]):(sum(df_re$strata[1:2])),2],
+           0, df_re$upper[(1 + sum(df_re$strata[1:2])):(sum(df_re$strata[1:3])),2],
+           0, df_re$upper[(1 + sum(df_re$strata[1:3])):(sum(df_re$strata[1:4])),2],
+           0, df_re$upper[(1 + sum(df_re$strata[1:4])):(sum(df_re$strata[1:5])),2])
 
-DATA_ci_re=as.data.frame(DATA_ci_re)
-colnames(DATA_ci_re)=c("x","y","ymin","ymax")
-breaks=which(c(DATA_ci_re$x,0)==0)[-1]
-DATA_ci_re$race_eth=c(rep("Non-Hispanic White",   1+df_re$strata[1]),
-           rep("Hispanic (All Races)", 1+ df_re$strata[2]),
-           rep("Non-Hispanic American Indian/Alaska Native)", 1+ df_re$strata[3]),
-           rep("Non-Hispanic Asian or Pacific Islander", 1+ df_re$strata[4]),
-           rep("Non-Hispanic Black", 1+ df_re$strata[5]))
+DATA_ci_re <- as.data.frame(DATA_ci_re)
+colnames(DATA_ci_re) <- c("x","y","ymin","ymax")
+breaks <- which(c(DATA_ci_re$x,0) == 0)[-1]
+DATA_ci_re$race_eth <- c(rep("Non-Hispanic White", 1 + df_re$strata[1]),
+           rep("Hispanic (All Races)", 1 + df_re$strata[2]),
+           rep("Non-Hispanic American Indian/Alaska Native)", 1 + df_re$strata[3]),
+           rep("Non-Hispanic Asian or Pacific Islander", 1 + df_re$strata[4]),
+           rep("Non-Hispanic Black", 1 + df_re$strata[5]))
 DATA_ci_re$race_eth=factor(DATA_ci_re$race_eth)
 
 # In this plot, we have two groups, so it gets busy to also show other
 # cause deaths. We drop them from this plot.
-plot_race_eth = ggplot(data=DATA_ci_re,aes(x=x,y=y,ymin=ymin,ymax=ymax,color=race_eth))+
-  scale_color_manual(values=mycolors(6)[-6],name ="Race and ethnicity")+
-  geom_ribbon(aes(fill=race_eth,linetype=NA),alpha=0.25,show.legend=FALSE)+
-  geom_line(linewidth=0.75)+
+plot_race_eth <- ggplot(data=DATA_ci_re,aes(x = x, y = y, ymin = ymin, ymax = ymax, color = race_eth)) +
+  scale_color_manual(values = mycolors(6)[-6], name ="Race and ethnicity") +
+  geom_ribbon(aes(fill = race_eth,linetype = NA), alpha = 0.25, show.legend = FALSE) +
+  geom_line(linewidth = 0.75) +
   scale_fill_manual(guide="none",values=mycolors(6)[-6])+
-  theme_bw(base_size = 8) + labs(x='Years since diagnosis', y='Fraction dead from cancer')+
-  theme(axis.title.y=element_text(vjust=1.5))+
+  theme_bw(base_size = 8) + labs(x ="Years since diagnosis", y = "Fraction dead from cancer") +
+  theme(axis.title.y = element_text(vjust = 1.5)) +
   theme(legend.position = "inside",
         legend.position.inside = c(0.2,0.7),legend.key = element_blank(),
-        legend.background=element_blank(),legend.text=element_text(size=7),
-        legend.key.height=unit(0.05,"inch"))+
+        legend.background = element_blank(),legend.text = element_text(size=7),
+        legend.key.height = unit(0.05,"inch")) +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line.x = element_line(color = "black",linewidth=0.4),
-        axis.line.y = element_line(color = "black",linewidth=0.4))+
-  scale_x_continuous(limits=c(0,5),expand=(c(0.01,0.01)))+ 
-  scale_y_continuous(limits=c(0,.2),expand=c(0.005,0.005))
+        axis.line.y = element_line(color = "black",linewidth=0.4)) +
+  scale_x_continuous(limits = c(0,5), expand = (c(0.01,0.01))) + 
+  scale_y_continuous(limits = c(0,.2), expand = c(0.005,0.005))
 
 plot_race_eth
 ```
@@ -303,34 +303,34 @@ df_subsite <- sf_subsite
 # Create a data matrix with the correct number of rows:
 # A 0 for each group plus the sum of the number of rows for each subgroup.
 # Drop "unknown" race.
-DATA_ci_subsite=matrix(NA,nrow=(4+sum(df_subsite$strata[1:4])),ncol=4)
+DATA_ci_subsite=matrix(NA, nrow=(4 + sum(df_subsite$strata[1:4])), ncol = 4)
 # x
-DATA_ci_subsite[,1] <- c(0,df_subsite$time[1:df_subsite$strata[1]],
-           0,df_subsite$time[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2]))],
-           0,df_subsite$time[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3]))],
-           0,df_subsite$time[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4]))])
+DATA_ci_subsite[,1] <- c(0, df_subsite$time[1:df_subsite$strata[1]],
+           0, df_subsite$time[(1 + df_subsite$strata[1]):(sum(df_subsite$strata[1:2]))],
+           0, df_subsite$time[(1 + sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3]))],
+           0, df_subsite$time[(1 + sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4]))])
 # y
 DATA_ci_subsite[,2] <- c(0,df_subsite$pstate[1:df_subsite$strata[1],2],
-           0,df_subsite$pstate[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
-           0,df_subsite$pstate[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
-           0,df_subsite$pstate[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
-#95% CI (lower bound)
+           0, df_subsite$pstate[(1 + df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
+           0, df_subsite$pstate[(1 + sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
+           0, df_subsite$pstate[(1 + sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
+# 95% CI (lower bound)
 DATA_ci_subsite[,3] <- c(0,df_subsite$lower[1:df_subsite$strata[1],2],
-           0,df_subsite$lower[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
-           0,df_subsite$lower[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
-           0,df_subsite$lower[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
-#95% CI (upper bound)
+           0, df_subsite$lower[(1 + df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
+           0, df_subsite$lower[(1 + sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
+           0, df_subsite$lower[(1 + sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
+# 95% CI (upper bound)
 DATA_ci_subsite[,4] <- c(0,df_subsite$upper[1:df_subsite$strata[1],2],
-           0,df_subsite$upper[(1+df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
-           0,df_subsite$upper[(1+sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
-           0,df_subsite$upper[(1+sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
+           0, df_subsite$upper[(1 + df_subsite$strata[1]):(sum(df_subsite$strata[1:2])),2],
+           0, df_subsite$upper[(1 + sum(df_subsite$strata[1:2])):(sum(df_subsite$strata[1:3])),2],
+           0, df_subsite$upper[(1 + sum(df_subsite$strata[1:3])):(sum(df_subsite$strata[1:4])),2])
 DATA_ci_subsite <- as.data.frame(DATA_ci_subsite)
 colnames(DATA_ci_subsite) <- c("x","y","ymin","ymax")
 breaks <- which(c(DATA_ci_subsite$x,0) == 0)[-1]
-DATA_ci_subsite$subsite <- c(rep("Head and Neck", 1+df_subsite$strata[1]),
-           rep("Trunk", 1+ df_subsite$strata[2]),
-           rep("Arm", 1+ df_subsite$strata[3]),
-           rep("Leg", 1+ df_subsite$strata[4]))
+DATA_ci_subsite$subsite <- c(rep("Head and Neck", 1 + df_subsite$strata[1]),
+           rep("Trunk", 1 + df_subsite$strata[2]),
+           rep("Arm", 1 + df_subsite$strata[3]),
+           rep("Leg", 1 + df_subsite$strata[4]))
 DATA_ci_subsite$subsite = factor(DATA_ci_subsite$subsite)
 
 # In this plot, we have two groups, so it gets busy to also show other
@@ -366,27 +366,27 @@ df_age <- sf_age
 # Create a data matrix with the correct number of rows:
 # A 0 for each group plus the sum of the number of rows for each subgroup.
 # Drop "unknown" race.
-DATA_ci_age <- matrix(NA,nrow=(4+sum(df_age$strata[1:4])),ncol=4)
+DATA_ci_age <- matrix(NA,nrow=(4 + sum(df_age$strata[1:4])), ncol=4)
 # x
-DATA_ci_age[,1] <- c(0,df_age$time[1:df_age$strata[1]],
-           0,df_age$time[(1+df_age$strata[1]):(sum(df_age$strata[1:2]))],
-           0,df_age$time[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3]))],
-           0,df_age$time[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4]))])
+DATA_ci_age[,1] <- c(0, df_age$time[1:df_age$strata[1]],
+           0, df_age$time[(1 + df_age$strata[1]):(sum(df_age$strata[1:2]))],
+           0, df_age$time[(1 + sum(df_age$strata[1:2])):(sum(df_age$strata[1:3]))],
+           0, df_age$time[(1 + sum(df_age$strata[1:3])):(sum(df_age$strata[1:4]))])
 # y
 DATA_ci_age[,2] <- c(0,df_age$pstate[1:df_age$strata[1],2],
-           0,df_age$pstate[(1+df_age$strata[1]):(sum(df_age$strata[1:2])),2],
-           0,df_age$pstate[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])),2],
-           0,df_age$pstate[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])),2])
+           0, df_age$pstate[(1 + df_age$strata[1]):(sum(df_age$strata[1:2])), 2],
+           0, df_age$pstate[(1 + sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])), 2],
+           0, df_age$pstate[(1 + sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])), 2])
 # 95% CI (lower bound)
 DATA_ci_age[,3] <- c(0,df_age$lower[1:df_age$strata[1],2],
-           0,df_age$lower[(1+df_age$strata[1]):(sum(df_age$strata[1:2])),2],
-           0,df_age$lower[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])),2],
-           0,df_age$lower[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])),2])
+           0, df_age$lower[(1 + df_age$strata[1]):(sum(df_age$strata[1:2])), 2],
+           0, df_age$lower[(1 + sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])), 2],
+           0, df_age$lower[(1 + sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])), 2])
 # 95% CI (upper bound)
 DATA_ci_age[,4] <- c(0,df_age$upper[1:df_age$strata[1],2],
-           0,df_age$upper[(1+df_age$strata[1]):(sum(df_age$strata[1:2])),2],
-           0,df_age$upper[(1+sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])),2],
-           0,df_age$upper[(1+sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])),2])
+           0, df_age$upper[(1 + df_age$strata[1]):(sum(df_age$strata[1:2])), 2],
+           0, df_age$upper[(1 + sum(df_age$strata[1:2])):(sum(df_age$strata[1:3])), 2],
+           0, df_age$upper[(1 + sum(df_age$strata[1:3])):(sum(df_age$strata[1:4])), 2])
 DATA_ci_age <- as.data.frame(DATA_ci_age)
 colnames(DATA_ci_age) <- c("x","y","ymin","ymax")
 breaks <- which(c(DATA_ci_age$x,0) == 0)[-1]
